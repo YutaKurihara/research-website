@@ -46,6 +46,59 @@ export default function Home() {
         </ul>
       </section>
 
+      <section className="mt-10">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted">
+          Biography
+        </h2>
+        <div className="space-y-4 text-sm">
+          <div>
+            <h3 className="mb-1 font-semibold">学歴</h3>
+            <ul className="space-y-1 text-muted">
+              <li>2014.03　並木中等教育学校 卒業</li>
+              <li>2018.03　東京工業大学 生命理工学部 生命科学科 卒業</li>
+              <li>2021.03　東京工業大学 環境・社会理工学院 融合理工学系 地球環境共創コース 修了</li>
+              <li>2023.10　政策研究大学院大学 防災学プログラム 博士課程 入学（ICHARM）</li>
+              <li>2026.09　同 修了予定</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-1 font-semibold">職歴</h3>
+            <ul className="space-y-1 text-muted">
+              <li>2021.04〜現在　オリエンタルコンサルタンツグローバル株式会社 資源・防災部</li>
+              <li className="ml-12 text-xs">河川水理・水文・防災・リモートセンシング</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-1 font-semibold">海外経験</h3>
+            <ul className="space-y-1 text-muted">
+              <li>2018　マルタ（1.5か月・語学研修）</li>
+              <li>2019　イタリア（1年・ボローニャ大学 環境工学科 交換留学）</li>
+              <li>2020　メキシコ（1.5か月・語学研修）</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-1 font-semibold">資格・語学</h3>
+            <ul className="space-y-1 text-muted">
+              <li>PCM手法（計画・立案コース）</li>
+              <li>TOEIC 895点 / 英語 DELE B1（スペイン語）</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-1 font-semibold">学会登壇</h3>
+            <ul className="space-y-1 text-muted">
+              <li>2024.09　16th AOGEO Symposium - Young Career and Earth Intelligence（日本）</li>
+              <li>2025.07　第2回国際社会水文学会議 ポスター発表（日本）</li>
+              <li>2025.10　17th AOGEO Symposium - AWCI Session, Special Speaker（タイ）</li>
+              <li>2026.06　16th International Conference on Hydroinformatics（スペイン）</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <div className="mt-10">
         <Link
           href="/publications"
