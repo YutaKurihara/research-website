@@ -34,47 +34,59 @@ export default async function PublicationDetailPage({
   if (!pub) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <Link
-        href="/publications"
-        className="mb-8 inline-block text-sm text-accent hover:underline"
-      >
-        &larr; Back
-      </Link>
+    <div className="mx-auto max-w-2xl px-6">
+      <section className="pb-8 pt-20">
+        <Link
+          href="/publications"
+          className="text-xs uppercase tracking-widest text-muted transition-colors hover:text-foreground"
+        >
+          &larr; Publications
+        </Link>
 
-      <span className="mb-2 inline-block rounded bg-accent-light px-1.5 py-0.5 text-xs text-accent">
-        {typeLabels[pub.type]}
-      </span>
-      <h1 className="mb-2 text-xl font-bold leading-tight">{pub.title}</h1>
-      <p className="mb-1 text-xs text-muted">
-        {pub.authors} &middot; {pub.venue} &middot; {pub.year}
-      </p>
-      <a
-        href={`https://doi.org/${pub.doi}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-xs text-accent hover:underline"
-      >
-        DOI: {pub.doi}
-      </a>
-
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {pub.keywords.map((kw) => (
-          <span
-            key={kw}
-            className="rounded bg-accent-light px-1.5 py-0.5 text-xs text-accent"
-          >
-            {kw}
+        <div className="mt-8">
+          <span className="text-[10px] uppercase tracking-widest text-muted">
+            {typeLabels[pub.type]} &middot; {pub.year}
           </span>
-        ))}
-      </div>
+          <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
+            {pub.title}
+          </h1>
+          <p className="mt-3 text-xs text-muted">
+            {pub.authors} &middot; {pub.venue}
+          </p>
+          <a
+            href={`https://doi.org/${pub.doi}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-block text-xs text-highlight hover:underline"
+          >
+            DOI: {pub.doi}
+          </a>
+        </div>
 
-      <div className="mt-8 border-t border-border pt-6">
-        <h2 className="mb-2 text-sm font-semibold">Abstract</h2>
-        <p className="text-sm leading-relaxed text-muted">{pub.abstract}</p>
-      </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {pub.keywords.map((kw) => (
+            <span
+              key={kw}
+              className="rounded-full border border-border px-2.5 py-0.5 text-[10px] text-muted"
+            >
+              {kw}
+            </span>
+          ))}
+        </div>
+      </section>
 
-      <div className="mt-8 border-t border-border pt-6">
+      <hr className="border-border" />
+
+      <section className="py-8">
+        <h2 className="mb-4 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+          Abstract
+        </h2>
+        <p className="text-[13px] leading-relaxed text-muted">{pub.abstract}</p>
+      </section>
+
+      <hr className="border-border" />
+
+      <section className="py-8">
         {pub.id === "flood-direct-damage" ? (
           <FloodDirectDamageContent />
         ) : (
@@ -82,7 +94,7 @@ export default async function PublicationDetailPage({
             <DetailContent markdown={pub.details} />
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
@@ -95,7 +107,6 @@ function DetailContent({ markdown }: { markdown: string }) {
   while (i < lines.length) {
     const line = lines[i];
 
-    // Table detection
     if (line.startsWith("|") && i + 1 < lines.length && lines[i + 1]?.startsWith("|")) {
       const tableLines: string[] = [];
       while (i < lines.length && lines[i].startsWith("|")) {
@@ -103,14 +114,14 @@ function DetailContent({ markdown }: { markdown: string }) {
         i++;
       }
       const headerCells = tableLines[0].split("|").filter(Boolean).map((c) => c.trim());
-      const bodyRows = tableLines.slice(2); // skip header + separator
+      const bodyRows = tableLines.slice(2);
       elements.push(
         <div key={`table-${i}`} className="my-4 overflow-x-auto">
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr>
                 {headerCells.map((cell, ci) => (
-                  <th key={ci} className="border border-border bg-accent-light px-3 py-2 text-left font-semibold">
+                  <th key={ci} className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
                     {cell}
                   </th>
                 ))}
@@ -138,13 +149,13 @@ function DetailContent({ markdown }: { markdown: string }) {
 
     if (line.startsWith("## ")) {
       elements.push(
-        <h2 key={i} className="mb-2 mt-8 text-base font-semibold first:mt-0">
+        <h2 key={i} className="mb-3 mt-8 text-[11px] font-medium uppercase tracking-[0.2em] text-muted first:mt-0">
           {line.slice(3)}
         </h2>
       );
     } else if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={i} className="mb-1 mt-5 text-sm font-semibold">
+        <h3 key={i} className="mb-2 mt-5 text-sm font-medium">
           {line.slice(4)}
         </h3>
       );
@@ -152,7 +163,7 @@ function DetailContent({ markdown }: { markdown: string }) {
       const match = line.match(/^- \*\*(.+?)\*\*[:\s]*(.*)$/);
       if (match) {
         elements.push(
-          <li key={i} className="ml-4 list-disc text-muted">
+          <li key={i} className="ml-4 list-disc text-[13px] text-muted">
             <strong className="text-foreground">{match[1]}</strong>
             {match[2] && `: ${match[2]}`}
           </li>
@@ -160,7 +171,7 @@ function DetailContent({ markdown }: { markdown: string }) {
       }
     } else if (line.startsWith("- ")) {
       elements.push(
-        <li key={i} className="ml-4 list-disc text-muted">
+        <li key={i} className="ml-4 list-disc text-[13px] text-muted">
           <InlineFormat text={line.slice(2)} />
         </li>
       );
@@ -169,7 +180,7 @@ function DetailContent({ markdown }: { markdown: string }) {
       continue;
     } else {
       elements.push(
-        <p key={i} className="mb-3 text-muted">
+        <p key={i} className="mb-3 text-[13px] leading-relaxed text-muted">
           <InlineFormat text={line} />
         </p>
       );

@@ -14,27 +14,31 @@ export default function PublicationsPage() {
   const years = [...new Set(sorted.map((p) => p.year))];
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16">
-      <h1 className="mb-10 text-2xl font-bold">Publications</h1>
+    <div className="mx-auto max-w-2xl px-6">
+      <section className="pb-8 pt-20">
+        <h1 className="text-4xl font-light tracking-tight">Publications</h1>
+      </section>
+
+      <hr className="border-border" />
 
       {years.map((year) => (
-        <section key={year} className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted">
+        <section key={year} className="py-8">
+          <h2 className="mb-6 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
             {year}
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-6">
             {sorted
               .filter((p) => p.year === year)
               .map((pub) => (
                 <Link
                   key={pub.id}
                   href={`/publications/${pub.id}`}
-                  className="group block rounded-lg border border-border bg-card-bg p-4 transition-shadow hover:shadow-md"
+                  className="group block"
                 >
-                  <span className="mb-1 inline-block rounded bg-accent-light px-1.5 py-0.5 text-xs text-accent">
+                  <span className="text-[10px] uppercase tracking-widest text-muted">
                     {typeLabels[pub.type]}
                   </span>
-                  <p className="mt-1 text-sm font-medium group-hover:text-accent">
+                  <p className="mt-1 text-sm font-medium leading-snug transition-colors group-hover:text-highlight">
                     {pub.title}
                   </p>
                   <p className="mt-1 text-xs text-muted">
@@ -43,6 +47,7 @@ export default function PublicationsPage() {
                 </Link>
               ))}
           </div>
+          <hr className="mt-8 border-border" />
         </section>
       ))}
     </div>
