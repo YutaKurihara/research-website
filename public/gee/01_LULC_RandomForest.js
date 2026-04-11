@@ -400,29 +400,38 @@ var trainingPoints = Rice.merge(Corn).merge(Forest)
                         .merge(Barren).merge(Urban).merge(Water);
 
 // ==================== フィリピン地域定義（FAO GAUL Admin Boundaries） ====================
-var gadm = ee.FeatureCollection('FAO/GAUL/2015/level1');
-var phRegions = gadm.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
+// FAO GAUL Level2（Province）をRegion番号でグループ化
+var gaul2 = ee.FeatureCollection('FAO/GAUL/2015/level2');
+var phProvinces = gaul2.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
 
-// 地域名リスト（FAO GAUL 2015 Level1のADM1_NAMEに準拠）
-var regionNames = [
-  'Ilocos',
-  'Cagayan Valley',
-  'Central Luzon',
-  'Calabarzon',
-  'Bicol',
-  'Western Visayas',
-  'Central Visayas',
-  'Eastern Visayas',
-  'Zamboanga Peninsula',
-  'Northern Mindanao',
-  'Davao',
-  'Soccsksargen',
-  'Caraga',
-  'Autonomous Region in Muslim Mindanao',
-  'Cordillera Administrative Region',
-  'National Capital Region',
-  'Custom (Draw on map)'
-];
+// フィリピンの地域 → 所属Province名のマッピング
+var regionProvinces = {
+  'Region I - Ilocos': ['Ilocos Norte','Ilocos Sur','La Union','Pangasinan'],
+  'Region II - Cagayan Valley': ['Batanes','Cagayan','Isabela','Nueva Vizcaya','Quirino'],
+  'Region III - Central Luzon': ['Aurora','Bataan','Bulacan','Nueva Ecija','Pampanga','Tarlac','Zambales'],
+  'Region IV-A - CALABARZON': ['Batangas','Cavite','Laguna','Quezon','Rizal'],
+  'Region V - Bicol': ['Albay','Camarines Norte','Camarines Sur','Catanduanes','Masbate','Sorsogon'],
+  'Region VI - Western Visayas': ['Aklan','Antique','Capiz','Guimaras','Iloilo','Negros Occidental'],
+  'Region VII - Central Visayas': ['Bohol','Cebu','Negros Oriental','Siquijor'],
+  'Region VIII - Eastern Visayas': ['Biliran','Eastern Samar','Leyte','Northern Samar','Samar','Southern Leyte'],
+  'Region IX - Zamboanga': ['Zamboanga del Norte','Zamboanga del Sur','Zamboanga Sibugay'],
+  'Region X - Northern Mindanao': ['Bukidnon','Camiguin','Lanao del Norte','Misamis Occidental','Misamis Oriental'],
+  'Region XI - Davao': ['Compostela Valley','Davao del Norte','Davao del Sur','Davao Oriental'],
+  'Region XII - SOCCSKSARGEN': ['North Cotabato','Sarangani','South Cotabato','Sultan Kudarat'],
+  'Region XIII - Caraga': ['Agusan del Norte','Agusan del Sur','Dinagat Islands','Surigao del Norte','Surigao del Sur'],
+  'CAR - Cordillera': ['Abra','Apayao','Benguet','Ifugao','Kalinga','Mountain Province'],
+  'NCR - Metro Manila': ['Metropolitan Manila'],
+  'Custom (Draw on map)': null
+};
+
+var regionNames = Object.keys(regionProvinces);
+
+// 地域名からジオメトリを取得する関数
+function getRegionGeometry(regionName) {
+  var provinces = regionProvinces[regionName];
+  var filtered = phProvinces.filter(ee.Filter.inList('ADM2_NAME', provinces));
+  return filtered.geometry();
+}
 
 // ==================== UIパネル ====================
 var panel = ui.Panel({style: {width: '320px', padding: '8px'}});
@@ -471,7 +480,7 @@ function runClassification() {
   var CLOUD_THRESHOLD = cloudSlider.getValue();
   var selectedRegion = regionSelect.getValue();
 
-  // 解析範囲の決定（FAO GAUL admin boundary使用）
+  // 解析範囲の決定（FAO GAUL Province境界を結合して地域を構成）
   var region;
   if (selectedRegion === 'Custom (Draw on map)') {
     var drawingLayers = Map.drawingTools().layers();
@@ -483,8 +492,7 @@ function runClassification() {
       return;
     }
   } else {
-    var adminFeature = phRegions.filter(ee.Filter.eq('ADM1_NAME', selectedRegion));
-    region = adminFeature.geometry();
+    region = getRegionGeometry(selectedRegion);
   }
 
   // トレーニングは全国データを使用（regionに関係なく）
