@@ -52,11 +52,6 @@ panel.add(ui.Label('洪水検出閾値:', {fontWeight: 'bold', margin: '10px 0 4
 var threshSlider = ui.Slider({min: 1.0, max: 2.0, value: 1.15, step: 0.05, style: {stretch: 'horizontal'}});
 panel.add(threshSlider);
 
-// --- 解析範囲 ---
-panel.add(ui.Label('解析範囲:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
-panel.add(ui.Label('地図上でジオメトリを描画してください。描画しない場合はカガヤンバレー全域を使用します。',
-  {fontSize: '11px', color: 'gray'}));
-
 // --- 結果表示エリア ---
 var resultPanel = ui.Panel({style: {margin: '12px 0 0 0'}});
 panel.add(resultPanel);
