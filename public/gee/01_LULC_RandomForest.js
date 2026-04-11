@@ -560,14 +560,14 @@ function runClassification() {
   var testData = withRandom.filter(ee.Filter.gte('random', TRAIN_RATIO));
 
   var bands = inputImage.bandNames();
-  var trainSamples = inputImage.sampleRegions({collection: trainData, properties: ['LU'], scale: 30});
-  var testSamples = inputImage.sampleRegions({collection: testData, properties: ['LU'], scale: 30});
+  var trainSamples = inputImage.sampleRegions({collection: trainData, properties: ['LU'], scale: 100});
+  var testSamples = inputImage.sampleRegions({collection: testData, properties: ['LU'], scale: 100});
 
   var classifier = ee.Classifier.smileRandomForest(NUM_TREES)
     .train({features: trainSamples, classProperty: 'LU', inputProperties: bands});
 
-  // --- 選択地域のみに分類結果をクリップ ---
-  var classified = inputImage.clip(region).classify(classifier);
+  // --- 選択地域のみに分類結果をクリップ（100mスケールで表示） ---
+  var classified = inputImage.classify(classifier).clip(region);
 
   // --- 精度検証 ---
   var validated = testSamples.classify(classifier);
@@ -585,18 +585,24 @@ function runClassification() {
   resultPanel.add(ui.Label('年: ' + YEAR));
 
   errorMatrix.accuracy().evaluate(function(acc) {
-    resultPanel.add(ui.Label('全体精度: ' + (acc * 100).toFixed(1) + '%'));
+    if (acc !== null && acc !== undefined) {
+      resultPanel.add(ui.Label('全体精度: ' + (acc * 100).toFixed(1) + '%'));
+    }
   });
   errorMatrix.kappa().evaluate(function(k) {
-    resultPanel.add(ui.Label('カッパ係数: ' + k.toFixed(3)));
+    if (k !== null && k !== undefined) {
+      resultPanel.add(ui.Label('カッパ係数: ' + k.toFixed(3)));
+    }
   });
 
   // 各土地利用タイプの精度
   errorMatrix.producersAccuracy().evaluate(function(pa) {
+    if (!pa) return;
     resultPanel.add(ui.Label('分類精度:', {fontWeight: 'bold', margin: '8px 0 4px 0'}));
     for (var i = 0; i < luNames.length; i++) {
-      var acc = pa[i] ? (pa[i][0] * 100).toFixed(1) : '-';
-      resultPanel.add(ui.Label('  ' + luNames[i] + ': ' + acc + '%', {fontSize: '11px'}));
+      var val = (pa[i] && pa[i][0] !== null && pa[i][0] !== undefined)
+        ? (pa[i][0] * 100).toFixed(1) + '%' : '-';
+      resultPanel.add(ui.Label('  ' + luNames[i] + ': ' + val, {fontSize: '11px'}));
     }
   });
 
@@ -604,7 +610,7 @@ function runClassification() {
   Export.image.toDrive({
     image: classified,
     description: 'LULC_' + selectedRegion.replace(/[^a-zA-Z0-9]/g, '_') + '_' + YEAR,
-    region: region, scale: 30, maxPixels: 1e13, fileFormat: 'GeoTIFF'
+    region: region, scale: 100, maxPixels: 1e13, fileFormat: 'GeoTIFF'
   });
 
   print('--- Classification complete: ' + selectedRegion + ' ' + YEAR + ' ---');
