@@ -441,7 +441,7 @@ var regionSelect = ui.Select({
   style: {stretch: 'horizontal'}
 });
 panel.add(regionSelect);
-panel.add(ui.Label('※ "Custom" 選択時は地図上にジオメトリを描画してください',
+panel.add(ui.Label('※「Custom」選択時は地図上にジオメトリを描画してください',
   {fontSize: '10px', color: 'gray'}));
 
 // --- 解析年 ---
@@ -459,13 +459,13 @@ var resultPanel = ui.Panel({style: {margin: '12px 0 0 0'}});
 panel.add(resultPanel);
 
 // --- Apply ボタン ---
-var applyButton = ui.Button({label: 'Apply', style: {stretch: 'horizontal', fontWeight: 'bold'}});
+var applyButton = ui.Button({label: '実行', style: {stretch: 'horizontal', fontWeight: 'bold'}});
 panel.add(applyButton);
 
 // ==================== 解析関数 ====================
 function runClassification() {
   resultPanel.clear();
-  resultPanel.add(ui.Label('Processing...', {color: 'blue'}));
+  resultPanel.add(ui.Label('処理中...', {color: 'blue'}));
 
   var YEAR = yearSlider.getValue();
   var CLOUD_THRESHOLD = cloudSlider.getValue();
@@ -479,7 +479,7 @@ function runClassification() {
       region = drawingLayers.get(0).toGeometry();
     } else {
       resultPanel.clear();
-      resultPanel.add(ui.Label('Error: 地図上にジオメトリを描画してください', {color: 'red'}));
+      resultPanel.add(ui.Label('エラー: 地図上にジオメトリを描画してください', {color: 'red'}));
       return;
     }
   } else {
@@ -575,28 +575,24 @@ function runClassification() {
 
   // --- 結果表示 ---
   resultPanel.clear();
-  resultPanel.add(ui.Label('Results', {fontWeight: 'bold', margin: '0 0 6px 0'}));
-  resultPanel.add(ui.Label('Region: ' + selectedRegion));
-  resultPanel.add(ui.Label('Year: ' + YEAR));
+  resultPanel.add(ui.Label('解析結果', {fontWeight: 'bold', margin: '0 0 6px 0'}));
+  resultPanel.add(ui.Label('地域: ' + selectedRegion));
+  resultPanel.add(ui.Label('年: ' + YEAR));
 
   errorMatrix.accuracy().evaluate(function(acc) {
-    resultPanel.add(ui.Label('Overall Accuracy: ' + (acc * 100).toFixed(1) + '%'));
+    resultPanel.add(ui.Label('全体精度: ' + (acc * 100).toFixed(1) + '%'));
   });
   errorMatrix.kappa().evaluate(function(k) {
-    resultPanel.add(ui.Label('Kappa: ' + k.toFixed(3)));
+    resultPanel.add(ui.Label('カッパ係数: ' + k.toFixed(3)));
   });
 
-  // 各土地利用タイプの精度（Producer's / User's Accuracy）
+  // 各土地利用タイプの精度
   errorMatrix.producersAccuracy().evaluate(function(pa) {
-    errorMatrix.consumersAccuracy().evaluate(function(ca) {
-      resultPanel.add(ui.Label('Class Accuracy:', {fontWeight: 'bold', margin: '8px 0 4px 0'}));
-      for (var i = 0; i < luNames.length; i++) {
-        var prod = pa[i] ? (pa[i][0] * 100).toFixed(1) : '-';
-        var user = ca[0] && ca[0].length > i ? (ca[0][i] * 100).toFixed(1) : '-';
-        resultPanel.add(ui.Label('  ' + luNames[i] + ':  Prod ' + prod + '% / User ' + user + '%',
-          {fontSize: '11px'}));
-      }
-    });
+    resultPanel.add(ui.Label('分類精度:', {fontWeight: 'bold', margin: '8px 0 4px 0'}));
+    for (var i = 0; i < luNames.length; i++) {
+      var acc = pa[i] ? (pa[i][0] * 100).toFixed(1) : '-';
+      resultPanel.add(ui.Label('  ' + luNames[i] + ': ' + acc + '%', {fontSize: '11px'}));
+    }
   });
 
   // --- エクスポート ---
@@ -613,7 +609,7 @@ applyButton.onClick(runClassification);
 
 // ==================== 凡例 ====================
 var legend = ui.Panel({style: {position: 'bottom-left'}});
-legend.add(ui.Label('LULC', {fontWeight: 'bold'}));
+legend.add(ui.Label('凡例', {fontWeight: 'bold'}));
 luNames.forEach(function(name, i) {
   var color = ui.Panel({
     style: {backgroundColor: luPalette[i], width: '14px', height: '14px', margin: '2px 4px 2px 0'}
