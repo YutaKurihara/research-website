@@ -491,13 +491,9 @@ function runClassification() {
     region = getRegionGeometry(selectedRegion);
   }
 
-  // トレーニングは全国データを使用（regionに関係なく）
-  var trainRegion = ee.Geometry.Rectangle([117, 4, 127, 21]);
-
-  // --- Sentinel-1 SAR ---
-  function getS1(startDate, endDate, aoi) {
+  // --- 衛星データ取得関数 ---
+  function getS1(startDate, endDate) {
     return ee.ImageCollection('COPERNICUS/S1_GRD')
-      .filterBounds(aoi)
       .filterDate(startDate, endDate)
       .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
       .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
@@ -505,10 +501,8 @@ function runClassification() {
       .median();
   }
 
-  // --- Sentinel-2 ---
-  function getS2(startDate, endDate, aoi) {
+  function getS2(startDate, endDate) {
     var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-      .filterBounds(aoi)
       .filterDate(startDate, endDate)
       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', CLOUD_THRESHOLD));
     var composite = s2.median();
@@ -524,7 +518,7 @@ function runClassification() {
       .addBands(ndvi).addBands(evi).addBands(ndwi).addBands(mndwi);
   }
 
-  // --- 季節ごとのデータ取得（全国範囲でトレーニング用） ---
+  // --- 季節ごとの衛星データ（遅延評価: filterBoundsなしでGEEに任せる） ---
   var periods = [
     {start: YEAR+'-01-01', end: YEAR+'-04-30', suffix: '_P1'},
     {start: YEAR+'-05-01', end: YEAR+'-08-31', suffix: '_P2'},
@@ -533,8 +527,8 @@ function runClassification() {
 
   var inputImage = ee.Image([]);
   periods.forEach(function(p) {
-    var s1 = getS1(p.start, p.end, trainRegion);
-    var s2 = getS2(p.start, p.end, trainRegion);
+    var s1 = getS1(p.start, p.end);
+    var s2 = getS2(p.start, p.end);
     var s1Renamed = s1.select(['VV','VH'], ['VV'+p.suffix, 'VH'+p.suffix]);
     var s2Renamed = s2.bandNames().iterate(function(bandName, img) {
       bandName = ee.String(bandName);
@@ -544,8 +538,7 @@ function runClassification() {
   });
 
   // --- 地形データ ---
-  var merit = ee.Image('MERIT/Hydro/v1_0_1');
-  var elevation = merit.select('elv').rename('elevation');
+  var elevation = ee.Image('MERIT/Hydro/v1_0_1').select('elv').rename('elevation');
   var slopeImg = ee.Terrain.slope(elevation).rename('slope');
   inputImage = inputImage.addBands(elevation).addBands(slopeImg);
 
@@ -554,14 +547,15 @@ function runClassification() {
     .select('discrete_classification').rename('landcover_ref');
   inputImage = inputImage.addBands(landcover);
 
-  // --- Random Forest（全国データでトレーニング） ---
+  // --- トレーニング（全国の教師データポイントでサンプリング） ---
   var withRandom = trainingPoints.randomColumn('random', 42);
   var trainData = withRandom.filter(ee.Filter.lt('random', TRAIN_RATIO));
   var testData = withRandom.filter(ee.Filter.gte('random', TRAIN_RATIO));
 
   var bands = inputImage.bandNames();
-  var trainSamples = inputImage.sampleRegions({collection: trainData, properties: ['LU'], scale: 100});
-  var testSamples = inputImage.sampleRegions({collection: testData, properties: ['LU'], scale: 100});
+  // sampleRegionsは各ポイント周辺のピクセル値のみ取得するため、メモリ効率が良い
+  var trainSamples = inputImage.sampleRegions({collection: trainData, properties: ['LU'], scale: 30});
+  var testSamples = inputImage.sampleRegions({collection: testData, properties: ['LU'], scale: 30});
 
   var classifier = ee.Classifier.smileRandomForest(NUM_TREES)
     .train({features: trainSamples, classProperty: 'LU', inputProperties: bands});
@@ -610,7 +604,7 @@ function runClassification() {
   Export.image.toDrive({
     image: classified,
     description: 'LULC_' + selectedRegion.replace(/[^a-zA-Z0-9]/g, '_') + '_' + YEAR,
-    region: region, scale: 100, maxPixels: 1e13, fileFormat: 'GeoTIFF'
+    region: region, scale: 30, maxPixels: 1e13, fileFormat: 'GeoTIFF'
   });
 
   print('--- Classification complete: ' + selectedRegion + ' ' + YEAR + ' ---');
