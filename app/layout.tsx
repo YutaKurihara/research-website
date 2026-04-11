@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kurihara | Research Portfolio",
-    template: "%s | Kurihara Research",
+    default: "Kurihara Yuta",
+    template: "%s | Kurihara Yuta",
   },
   description:
-    "Research portfolio focusing on probabilistic rainfall forecasting, Bayesian methods, and disaster risk reduction in Southeast Asia.",
+    "Disaster risk reduction, probabilistic forecasting, and remote sensing research.",
 };
 
 export default function RootLayout({

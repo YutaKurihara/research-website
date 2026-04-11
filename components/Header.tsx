@@ -14,15 +14,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card-bg/80 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-sm font-semibold tracking-tight">
+      <nav className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
+        <Link href="/" className="font-semibold tracking-tight">
           Kurihara Yuta
         </Link>
 
         <ul className="hidden gap-8 md:flex">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              {"external" in item ? (
+          {navItems.map((item) =>
+            "external" in item ? (
+              <li key={item.href}>
                 <a
                   href={item.href}
                   target="_blank"
@@ -31,16 +31,18 @@ export default function Header() {
                 >
                   {item.label}
                 </a>
-              ) : (
+              </li>
+            ) : (
+              <li key={item.href}>
                 <Link
                   href={item.href}
                   className="text-sm text-muted transition-colors hover:text-foreground"
                 >
                   {item.label}
                 </Link>
-              )}
-            </li>
-          ))}
+              </li>
+            )
+          )}
         </ul>
 
         <button
@@ -60,9 +62,9 @@ export default function Header() {
 
       {menuOpen && (
         <ul className="border-t border-border px-6 pb-4 md:hidden">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              {"external" in item ? (
+          {navItems.map((item) =>
+            "external" in item ? (
+              <li key={item.href}>
                 <a
                   href={item.href}
                   target="_blank"
@@ -72,7 +74,9 @@ export default function Header() {
                 >
                   {item.label}
                 </a>
-              ) : (
+              </li>
+            ) : (
+              <li key={item.href}>
                 <Link
                   href={item.href}
                   className="block py-2 text-sm text-muted hover:text-foreground"
@@ -80,9 +84,9 @@ export default function Header() {
                 >
                   {item.label}
                 </Link>
-              )}
-            </li>
-          ))}
+              </li>
+            )
+          )}
         </ul>
       )}
     </header>
