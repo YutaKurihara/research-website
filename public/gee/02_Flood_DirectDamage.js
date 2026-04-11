@@ -71,13 +71,15 @@ function runAnalysis() {
   var POLARIZATION = polSelect.getValue();
   var FLOOD_THRESHOLD = threshSlider.getValue();
 
-  // 解析範囲
+  // 解析範囲（地図上にジオメトリを描画する必要あり）
   var drawingLayers = Map.drawingTools().layers();
   var region;
   if (drawingLayers.length() > 0 && drawingLayers.get(0).geometries().length() > 0) {
     region = drawingLayers.get(0).toGeometry();
   } else {
-    region = ee.Geometry.Rectangle([120.5, 16.0, 122.5, 18.8]);
+    resultPanel.clear();
+    resultPanel.add(ui.Label('エラー: 地図上に解析範囲を描画してください', {color: 'red'}));
+    return;
   }
 
   // LULC マップ（Assetにアップロードしたものに差し替えてください）
