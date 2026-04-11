@@ -6,7 +6,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/publications", label: "Publications" },
-  { href: "https://yutakurihara.github.io/MyProject/", label: "Tools", external: true },
+  { href: "https://yutakurihara.github.io/MyProject/", label: "MyProject", external: true },
 ];
 
 export default function Header() {
