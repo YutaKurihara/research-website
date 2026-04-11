@@ -6,8 +6,7 @@ export const metadata: Metadata = { title: "Publications" };
 
 const typeLabels: Record<string, string> = {
   journal: "Journal",
-  conference: "Conference",
-  working: "Working Paper",
+  preprint: "Preprint",
 };
 
 export default function PublicationsPage() {

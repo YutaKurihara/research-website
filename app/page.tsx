@@ -5,6 +5,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
       <h1 className="mb-1 text-2xl font-bold">{profile.name}</h1>
+      <p className="mb-1 text-sm">{profile.nameJa}</p>
       <p className="mb-6 text-sm text-muted">{profile.affiliation} / {profile.tagline}</p>
 
       <div className="mb-10 flex flex-wrap gap-4 text-sm">
@@ -35,14 +36,14 @@ export default function Home() {
       </div>
 
       <section>
-        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wider text-muted">
-          About
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted">
+          Research Fields
         </h2>
-        <p className="text-sm leading-relaxed">
-          防災・減災分野の研究者。フィリピン・カガヤン川流域を主な対象として、
-          ベイズ統計手法とS2Sアンサンブル予測を組み合わせた確率的降水予測、
-          衛星画像による洪水被害評価、気候変動下の洪水リスク評価などに取り組んでいます。
-        </p>
+        <ul className="space-y-1 text-sm leading-relaxed">
+          <li>リモートセンシングによる洪水リスク解析</li>
+          <li>マクロ経済モデルを使用した洪水による経済影響評価</li>
+          <li>途上国における防災計画と災害リスクアセスメント</li>
+        </ul>
       </section>
 
       <div className="mt-10">

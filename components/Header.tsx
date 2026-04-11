@@ -15,7 +15,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-card-bg/80 backdrop-blur-md">
       <nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
         <Link href="/" className="text-sm font-semibold tracking-tight">
-          Kurihara
+          Kurihara Yuta
         </Link>
 
         <ul className="hidden gap-8 md:flex">
