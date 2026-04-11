@@ -399,39 +399,30 @@ var luNames = ['Rice', 'Corn', 'Forest', 'Barren', 'Urban', 'Water'];
 var trainingPoints = Rice.merge(Corn).merge(Forest)
                         .merge(Barren).merge(Urban).merge(Water);
 
-// ==================== フィリピン地域定義（FAO GAUL Admin Boundaries） ====================
-// FAO GAUL Level2（Province）をRegion番号でグループ化
-var gaul2 = ee.FeatureCollection('FAO/GAUL/2015/level2');
-var phProvinces = gaul2.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
-
-// フィリピンの地域 → 所属Province名のマッピング
-var regionProvinces = {
-  'Region I - Ilocos': ['Ilocos Norte','Ilocos Sur','La Union','Pangasinan'],
-  'Region II - Cagayan Valley': ['Batanes','Cagayan','Isabela','Nueva Vizcaya','Quirino'],
-  'Region III - Central Luzon': ['Aurora','Bataan','Bulacan','Nueva Ecija','Pampanga','Tarlac','Zambales'],
-  'Region IV-A - CALABARZON': ['Batangas','Cavite','Laguna','Quezon','Rizal'],
-  'Region V - Bicol': ['Albay','Camarines Norte','Camarines Sur','Catanduanes','Masbate','Sorsogon'],
-  'Region VI - Western Visayas': ['Aklan','Antique','Capiz','Guimaras','Iloilo','Negros Occidental'],
-  'Region VII - Central Visayas': ['Bohol','Cebu','Negros Oriental','Siquijor'],
-  'Region VIII - Eastern Visayas': ['Biliran','Eastern Samar','Leyte','Northern Samar','Samar','Southern Leyte'],
-  'Region IX - Zamboanga': ['Zamboanga del Norte','Zamboanga del Sur','Zamboanga Sibugay'],
-  'Region X - Northern Mindanao': ['Bukidnon','Camiguin','Lanao del Norte','Misamis Occidental','Misamis Oriental'],
-  'Region XI - Davao': ['Compostela Valley','Davao del Norte','Davao del Sur','Davao Oriental'],
-  'Region XII - SOCCSKSARGEN': ['North Cotabato','Sarangani','South Cotabato','Sultan Kudarat'],
-  'Region XIII - Caraga': ['Agusan del Norte','Agusan del Sur','Dinagat Islands','Surigao del Norte','Surigao del Sur'],
-  'CAR - Cordillera': ['Abra','Apayao','Benguet','Ifugao','Kalinga','Mountain Province'],
-  'NCR - Metro Manila': ['Metropolitan Manila'],
-  'Custom (Draw on map)': null
+// ==================== フィリピン地域定義 ====================
+// 矩形で確実に地域をカバー（admin boundaryの名前不一致問題を回避）
+var regionBounds = {
+  'Region I - Ilocos':          ee.Geometry.Rectangle([119.8, 15.9, 120.9, 18.6]),
+  'Region II - Cagayan Valley': ee.Geometry.Rectangle([120.7, 16.0, 122.6, 18.9]),
+  'Region III - Central Luzon': ee.Geometry.Rectangle([119.8, 14.4, 121.6, 16.1]),
+  'Region IV-A - CALABARZON':   ee.Geometry.Rectangle([120.6, 13.5, 122.2, 14.9]),
+  'Region V - Bicol':           ee.Geometry.Rectangle([122.4, 11.4, 124.6, 14.2]),
+  'Region VI - Western Visayas':ee.Geometry.Rectangle([121.6, 10.0, 123.2, 12.0]),
+  'Region VII - Central Visayas':ee.Geometry.Rectangle([123.2, 9.2, 124.6, 11.4]),
+  'Region VIII - Eastern Visayas':ee.Geometry.Rectangle([124.2, 9.7, 125.6, 12.6]),
+  'Region IX - Zamboanga':      ee.Geometry.Rectangle([121.6, 6.8, 123.6, 8.4]),
+  'Region X - Northern Mindanao':ee.Geometry.Rectangle([123.4, 7.7, 125.1, 9.1]),
+  'Region XI - Davao':          ee.Geometry.Rectangle([125.2, 5.9, 126.7, 8.0]),
+  'Region XII - SOCCSKSARGEN':  ee.Geometry.Rectangle([124.0, 5.9, 125.4, 7.5]),
+  'Region XIII - Caraga':       ee.Geometry.Rectangle([125.2, 8.0, 126.6, 10.0]),
+  'CAR - Cordillera':           ee.Geometry.Rectangle([120.3, 16.4, 121.3, 17.9]),
+  'NCR - Metro Manila':         ee.Geometry.Rectangle([120.9, 14.35, 121.15, 14.78]),
 };
 
-var regionNames = Object.keys(regionProvinces);
+// 陸地マスク（海域を除外するため）
+var landMask = ee.Image('COPERNICUS/DEM/GLO30').select('DEM').mask();
 
-// 地域名からジオメトリを取得する関数
-function getRegionGeometry(regionName) {
-  var provinces = regionProvinces[regionName];
-  var filtered = phProvinces.filter(ee.Filter.inList('ADM2_NAME', provinces));
-  return filtered.geometry();
-}
+var regionNames = Object.keys(regionBounds).concat(['Custom (Draw on map)']);
 
 // ==================== UIパネル ====================
 var panel = ui.Panel({style: {width: '320px', padding: '8px'}});
@@ -480,7 +471,7 @@ function runClassification() {
   var CLOUD_THRESHOLD = cloudSlider.getValue();
   var selectedRegion = regionSelect.getValue();
 
-  // 解析範囲の決定（FAO GAUL Province境界を結合して地域を構成）
+  // 解析範囲の決定
   var region;
   if (selectedRegion === 'Custom (Draw on map)') {
     var drawingLayers = Map.drawingTools().layers();
@@ -492,7 +483,7 @@ function runClassification() {
       return;
     }
   } else {
-    region = getRegionGeometry(selectedRegion);
+    region = regionBounds[selectedRegion];
   }
 
   // トレーニングは全国データを使用（regionに関係なく）
