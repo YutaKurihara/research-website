@@ -91,30 +91,29 @@ export default function FloodDirectDamageContent() {
         <h3 className="mb-2 mt-5 font-semibold">FwDET-GEEによる浸水深の推定</h3>
         <p className="mb-3 text-muted">
           SAR画像から得られる浸水マップは「どこが浸水したか」を示しますが、「どれだけ深く浸水したか」は分かりません。
-          浸水深は被害額の算定に不可欠なため、<strong className="text-foreground">FwDET-GEE
-          （Floodwater Depth Estimation Tool）</strong>を使用して推定します。
+          浸水深は被害額の算定に不可欠なため、<strong className="text-foreground">FwDET-GEE</strong>を使用して推定します。
         </p>
-        <p className="mb-3 text-muted">
-          FwDETの仕組みは以下のとおりです：
-        </p>
-        <ol className="mb-4 ml-4 list-decimal space-y-2 text-muted">
-          <li>
-            <strong className="text-foreground">浸水域の境界を基準（水深 = 0m）</strong>とする。
-            浸水域の端は陸地と水面の境界なので、ここが水深ゼロの基準線となる。
-          </li>
-          <li>
-            <strong className="text-foreground">DEM（数値標高モデル）</strong>のデータを使い、
-            浸水域内の各セルについて、周囲8セルのうち最も低い水深を参照して水深を決定する。
-            Copernicus DEM GLO-30（相対垂直精度 &lt; 2m）を使用。
-          </li>
-          <li>
-            浸水域の境界から内側に向かって反復的に水深を計算することで、
-            <strong className="text-foreground">浸水域全体の水深分布</strong>を推定する。
-          </li>
-          <li>
-            3×3ピクセルのローパスフィルタで異常値を平滑化し、最終的な浸水深マップを生成する。
-          </li>
-        </ol>
+
+        <div className="my-4 rounded-lg border border-border bg-card-bg p-5">
+          <h4 className="mb-2 text-sm font-semibold">FwDET-GEEとは？</h4>
+          <p className="mb-3 text-muted">
+            FwDET-GEE（Floodwater Depth Estimation Tool）は、
+            <strong className="text-foreground">浸水した範囲の「深さ」を自動で推定するツール</strong>です。
+            Google Earth Engine上で動作し、衛星画像から得た浸水範囲と地形データ（DEM）を組み合わせて計算します。
+          </p>
+          <p className="mb-3 text-muted">
+            身近な例で言えば、<strong className="text-foreground">お皿に水を注いだとき</strong>を想像してください。
+            お皿の縁（＝浸水域の境界）の水深はゼロで、中心に向かうほど深くなります。
+            FwDETはこれと同じ考え方で、浸水域の端から内側に向かって、地形の高低差を利用して水深を計算していきます。
+          </p>
+          <p className="mb-2 font-semibold text-foreground">計算の流れ：</p>
+          <ol className="ml-4 list-decimal space-y-1 text-muted">
+            <li><strong className="text-foreground">浸水域の端を水深ゼロ</strong>に設定する</li>
+            <li>地形データ（DEM）を使い、端から内側に向かって<strong className="text-foreground">1ピクセルずつ水深を計算</strong>していく</li>
+            <li>各ピクセルでは、周囲8方向の隣接ピクセルの水深を参照して決定する</li>
+            <li>最後にフィルタ処理で異常値を除去し、滑らかな浸水深マップを生成</li>
+          </ol>
+        </div>
 
         <h3 className="mb-2 mt-5 font-semibold">浸水マッピングの結果</h3>
         <figure className="my-4">
@@ -161,14 +160,20 @@ export default function FloodDirectDamageContent() {
         <div className="my-4 rounded-lg border border-border bg-card-bg p-5">
           <h4 className="mb-2 text-sm font-semibold">Random Forestとは？</h4>
           <p className="mb-3 text-muted">
-            Random Forestは、多数の決定木（Decision Tree）を組み合わせた<strong className="text-foreground">アンサンブル学習</strong>手法です。
-            個々の決定木はデータのランダムなサブセットで学習し、最終的な分類は全ての木の「多数決」で決定します。
+            Random Forest（ランダムフォレスト）は、<strong className="text-foreground">
+            たくさんの「判断の木」を使って多数決で答えを出す</strong>AIの手法です。
           </p>
+          <p className="mb-3 text-muted">
+            例えるなら、<strong className="text-foreground">500人の専門家に同じ衛星画像を見せて「この場所は水田？トウモロコシ畑？森林？」と聞き、
+            最も多い回答を正解とする</strong>ようなイメージです。
+            1人の専門家だけに聞くと間違えることがありますが、500人に聞けば多数決で正解に近づきます。
+          </p>
+          <p className="mb-2 font-semibold text-foreground">なぜ正確なのか：</p>
           <ul className="ml-4 list-disc space-y-1 text-muted">
-            <li>単一の決定木より<strong className="text-foreground">過学習しにくい</strong>（頑健性が高い）</li>
-            <li>各特徴量の<strong className="text-foreground">重要度を定量化</strong>できる</li>
-            <li>ノイズに対して比較的強い</li>
-            <li>本研究では<strong className="text-foreground">500本の決定木</strong>を使用</li>
+            <li>各「木」はデータの<strong className="text-foreground">異なる一部分</strong>を見て判断するため、偏りが少ない</li>
+            <li>1本の木が間違えても、多数決なので<strong className="text-foreground">全体としては正確</strong></li>
+            <li>どの情報（色・形・標高など）が判断に重要かを<strong className="text-foreground">自動で評価</strong>できる</li>
+            <li>本研究では<strong className="text-foreground">500本の決定木</strong>を使用し、精度93%を達成</li>
           </ul>
         </div>
 
