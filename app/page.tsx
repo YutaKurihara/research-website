@@ -33,6 +33,14 @@ export default function Home() {
         >
           NOTE
         </a>
+        <a
+          href="https://yutakurihara.github.io/opendata/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent hover:underline"
+        >
+          Opendata
+        </a>
       </div>
 
       <section>
