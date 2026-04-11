@@ -437,7 +437,7 @@ panel.add(ui.Label('土地利用図作成ツール', {fontSize: '12px', color: '
 panel.add(ui.Label('解析地域:', {fontWeight: 'bold', margin: '14px 0 4px 0'}));
 var regionSelect = ui.Select({
   items: regionNames,
-  value: 'Cagayan Valley',
+  value: 'Region II - Cagayan Valley',
   style: {stretch: 'horizontal'}
 });
 panel.add(regionSelect);
