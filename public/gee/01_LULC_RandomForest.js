@@ -403,23 +403,23 @@ var trainingPoints = Rice.merge(Corn).merge(Forest)
 var gadm = ee.FeatureCollection('FAO/GAUL/2015/level1');
 var phRegions = gadm.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
 
-// 地域名リスト
+// 地域名リスト（FAO GAUL 2015 Level1のADM1_NAMEに準拠）
 var regionNames = [
-  'Ilocos Region',
+  'Ilocos',
   'Cagayan Valley',
   'Central Luzon',
   'Calabarzon',
-  'Bicol Region',
+  'Bicol',
   'Western Visayas',
   'Central Visayas',
   'Eastern Visayas',
   'Zamboanga Peninsula',
   'Northern Mindanao',
-  'Davao Region',
+  'Davao',
   'Soccsksargen',
   'Caraga',
-  'Autonomous Region in Muslim Mindanao (ARMM)',
-  'Cordillera Administrative Region (CAR)',
+  'Autonomous Region in Muslim Mindanao',
+  'Cordillera Administrative Region',
   'National Capital Region',
   'Custom (Draw on map)'
 ];
