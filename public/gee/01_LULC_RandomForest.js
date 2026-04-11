@@ -399,26 +399,30 @@ var luNames = ['Rice', 'Corn', 'Forest', 'Barren', 'Urban', 'Water'];
 var trainingPoints = Rice.merge(Corn).merge(Forest)
                         .merge(Barren).merge(Urban).merge(Water);
 
-// ==================== フィリピン地域定義 ====================
-var regions = {
-  'Region I - Ilocos': [119.5, 15.8, 121.0, 18.6],
-  'Region II - Cagayan Valley': [120.5, 16.0, 122.5, 18.8],
-  'Region III - Central Luzon': [120.0, 14.5, 121.5, 16.2],
-  'Region IV-A - CALABARZON': [120.5, 13.5, 122.0, 14.9],
-  'Region V - Bicol': [122.5, 12.5, 124.5, 14.2],
-  'Region VI - Western Visayas': [121.5, 10.2, 123.2, 12.0],
-  'Region VII - Central Visayas': [123.0, 9.3, 124.5, 11.3],
-  'Region VIII - Eastern Visayas': [124.0, 10.0, 125.5, 12.6],
-  'Region IX - Zamboanga': [121.5, 6.5, 123.5, 8.5],
-  'Region X - Northern Mindanao': [123.5, 7.5, 125.0, 9.0],
-  'Region XI - Davao': [125.0, 6.0, 127.0, 8.0],
-  'Region XII - SOCCSKSARGEN': [124.0, 5.5, 125.5, 7.5],
-  'Region XIII - Caraga': [125.0, 8.0, 126.5, 10.0],
-  'BARMM': [119.5, 5.0, 124.5, 8.0],
-  'CAR - Cordillera': [120.3, 16.5, 121.5, 17.8],
-  'NCR - Metro Manila': [120.9, 14.35, 121.15, 14.75],
-  'Custom (Draw on map)': null
-};
+// ==================== フィリピン地域定義（FAO GAUL Admin Boundaries） ====================
+var gadm = ee.FeatureCollection('FAO/GAUL/2015/level1');
+var phRegions = gadm.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
+
+// 地域名リスト
+var regionNames = [
+  'Ilocos Region',
+  'Cagayan Valley',
+  'Central Luzon',
+  'Calabarzon',
+  'Bicol Region',
+  'Western Visayas',
+  'Central Visayas',
+  'Eastern Visayas',
+  'Zamboanga Peninsula',
+  'Northern Mindanao',
+  'Davao Region',
+  'Soccsksargen',
+  'Caraga',
+  'Autonomous Region in Muslim Mindanao (ARMM)',
+  'Cordillera Administrative Region (CAR)',
+  'National Capital Region',
+  'Custom (Draw on map)'
+];
 
 // ==================== UIパネル ====================
 var panel = ui.Panel({style: {width: '320px', padding: '8px'}});
@@ -432,8 +436,8 @@ panel.add(ui.Label('土地利用図作成ツール', {fontSize: '12px', color: '
 // --- 地域選択 ---
 panel.add(ui.Label('解析地域:', {fontWeight: 'bold', margin: '14px 0 4px 0'}));
 var regionSelect = ui.Select({
-  items: Object.keys(regions),
-  value: 'Region II - Cagayan Valley',
+  items: regionNames,
+  value: 'Cagayan Valley',
   style: {stretch: 'horizontal'}
 });
 panel.add(regionSelect);
@@ -467,7 +471,7 @@ function runClassification() {
   var CLOUD_THRESHOLD = cloudSlider.getValue();
   var selectedRegion = regionSelect.getValue();
 
-  // 解析範囲の決定
+  // 解析範囲の決定（FAO GAUL admin boundary使用）
   var region;
   if (selectedRegion === 'Custom (Draw on map)') {
     var drawingLayers = Map.drawingTools().layers();
@@ -479,8 +483,8 @@ function runClassification() {
       return;
     }
   } else {
-    var bbox = regions[selectedRegion];
-    region = ee.Geometry.Rectangle(bbox);
+    var adminFeature = phRegions.filter(ee.Filter.eq('ADM1_NAME', selectedRegion));
+    region = adminFeature.geometry();
   }
 
   // トレーニングは全国データを使用（regionに関係なく）
