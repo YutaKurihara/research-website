@@ -111,7 +111,7 @@ function runAnalysis() {
   floodMask = floodMask.updateMask(permanentWater.not());
 
   // 傾斜5度以上の除外
-  var dem = ee.Image('COPERNICUS/DEM/GLO30').select('DEM');
+  var dem = ee.ImageCollection('COPERNICUS/DEM/GLO30').select('DEM').mosaic();
   var slopeImg = ee.Terrain.slope(dem);
   floodMask = floodMask.updateMask(slopeImg.lt(5));
 
