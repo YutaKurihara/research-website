@@ -70,7 +70,7 @@ export default function Home() {
           </div>
 
           <div>
-            <h3 className="mb-1 font-semibold">JICA案件（主な渡航先）</h3>
+            <h3 className="mb-1 font-semibold">海外プロジェクト（主な渡航先）</h3>
             <ul className="space-y-1 text-muted">
               <li>フィリピン / ホンジュラス / インド / インドネシア / トルコ</li>
             </ul>
