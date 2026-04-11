@@ -285,6 +285,26 @@ export default function FloodDirectDamageContent() {
           </table>
         </div>
 
+        <h3 className="mb-2 mt-6 font-semibold">各セクターの被害曲線</h3>
+        <p className="mb-4 text-muted">
+          以下は本研究で使用した主要セクターの被害曲線です。
+          いずれもシグモイド関数で近似されており、浸水深が増すにつれ被害率が非線形に上昇します。
+        </p>
+
+        <figure className="my-4">
+          <Image
+            src={`${basePath}/PrivateSector_DamageCurve.png`}
+            alt="住宅・水田・トウモロコシの被害曲線"
+            width={1200}
+            height={500}
+            className="w-full rounded-lg border border-border"
+          />
+          <figcaption className="mt-2 text-xs text-muted">
+            民間セクターの被害曲線。住宅（GMMA-RAP, 2014）、水田（Shrestha et al., 2016）、
+            トウモロコシ（Tariq et al., 2021）の浸水深と被害率の関係。
+          </figcaption>
+        </figure>
+
         <figure className="my-4">
           <Image
             src={`${basePath}/Fig.8_RoadsDamageCurve.png`}
@@ -387,6 +407,20 @@ export default function FloodDirectDamageContent() {
           GEE上で利用可能になりました。一方、従来の現地調査（SitRep）は結果の取りまとめまでに1か月を要しました。
         </p>
 
+        <figure className="my-4">
+          <Image
+            src={`${basePath}/Report_timeline.png`}
+            alt="従来手法と本手法のタイムライン比較"
+            width={1200}
+            height={400}
+            className="w-full rounded-lg border border-border"
+          />
+          <figcaption className="mt-2 text-xs text-muted">
+            被害報告のタイムライン比較。本手法は衛星画像の取得から2日で分析可能。
+            従来の現地調査（SitRep）は約1か月を要する。
+          </figcaption>
+        </figure>
+
         <div className="my-4 overflow-x-auto">
           <table className="w-full border-collapse text-xs">
             <thead>
@@ -420,26 +454,6 @@ export default function FloodDirectDamageContent() {
             </tbody>
           </table>
         </div>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-lg font-bold">被害額と復興予算の関係</h2>
-        <figure className="my-4">
-          <Image
-            src={`${basePath}/Fig.12_AssistantCost.png`}
-            alt="被害額と復興予算の相関"
-            width={1200}
-            height={800}
-            className="w-full rounded-lg border border-border"
-          />
-          <figcaption className="mt-2 text-xs text-muted">
-            Fig. 12: (A)(B)(C) 支援費用と直接被害の相関。(D)(E)(F) 復興予算と直接被害の相関。
-          </figcaption>
-        </figure>
-        <p className="text-muted">
-          衛星解析による被害推定結果を復興予算の配分に活用することで、
-          DPWHや各自治体への予算配分をより迅速かつ公平に行うことが期待されます。
-        </p>
       </section>
 
       <section>
