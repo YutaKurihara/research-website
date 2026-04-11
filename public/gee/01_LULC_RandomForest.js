@@ -391,23 +391,56 @@ var Water = ee.FeatureCollection([
 // ==================== 固定パラメータ ====================
 var NUM_TREES = 500;
 var TRAIN_RATIO = 0.7;
-var luPalette = ['#ff0000','#00ff00','#006400','#ffd700','#00ffff','#0000ff'];
+// Rice=cyan(旧Urban), Corn=green, Forest=darkgreen, Barren=gold, Urban=red(旧Rice), Water=blue
+var luPalette = ['#00ffff','#00ff00','#006400','#ffd700','#ff0000','#0000ff'];
 var luNames = ['Rice', 'Corn', 'Forest', 'Barren', 'Urban', 'Water'];
 
 // ==================== 教師データの結合 ====================
 var trainingPoints = Rice.merge(Corn).merge(Forest)
                         .merge(Barren).merge(Urban).merge(Water);
 
+// ==================== フィリピン地域定義 ====================
+var regions = {
+  'Region I - Ilocos': [119.5, 15.8, 121.0, 18.6],
+  'Region II - Cagayan Valley': [120.5, 16.0, 122.5, 18.8],
+  'Region III - Central Luzon': [120.0, 14.5, 121.5, 16.2],
+  'Region IV-A - CALABARZON': [120.5, 13.5, 122.0, 14.9],
+  'Region V - Bicol': [122.5, 12.5, 124.5, 14.2],
+  'Region VI - Western Visayas': [121.5, 10.2, 123.2, 12.0],
+  'Region VII - Central Visayas': [123.0, 9.3, 124.5, 11.3],
+  'Region VIII - Eastern Visayas': [124.0, 10.0, 125.5, 12.6],
+  'Region IX - Zamboanga': [121.5, 6.5, 123.5, 8.5],
+  'Region X - Northern Mindanao': [123.5, 7.5, 125.0, 9.0],
+  'Region XI - Davao': [125.0, 6.0, 127.0, 8.0],
+  'Region XII - SOCCSKSARGEN': [124.0, 5.5, 125.5, 7.5],
+  'Region XIII - Caraga': [125.0, 8.0, 126.5, 10.0],
+  'BARMM': [119.5, 5.0, 124.5, 8.0],
+  'CAR - Cordillera': [120.3, 16.5, 121.5, 17.8],
+  'NCR - Metro Manila': [120.9, 14.35, 121.15, 14.75],
+  'Custom (Draw on map)': null
+};
+
 // ==================== UIパネル ====================
 var panel = ui.Panel({style: {width: '320px', padding: '8px'}});
 ui.root.insert(0, panel);
 
 panel.add(ui.Label('LULC Random Forest', {
-  fontWeight: 'bold', fontSize: '16px', margin: '0 0 10px 0'
+  fontWeight: 'bold', fontSize: '16px', margin: '0 0 4px 0'
 }));
 panel.add(ui.Label('土地利用図作成ツール', {fontSize: '12px', color: 'gray'}));
 
-// --- 解析年の選択 ---
+// --- 地域選択 ---
+panel.add(ui.Label('解析地域:', {fontWeight: 'bold', margin: '14px 0 4px 0'}));
+var regionSelect = ui.Select({
+  items: Object.keys(regions),
+  value: 'Region II - Cagayan Valley',
+  style: {stretch: 'horizontal'}
+});
+panel.add(regionSelect);
+panel.add(ui.Label('※ "Custom" 選択時は地図上にジオメトリを描画してください',
+  {fontSize: '10px', color: 'gray'}));
+
+// --- 解析年 ---
 panel.add(ui.Label('解析年:', {fontWeight: 'bold', margin: '12px 0 4px 0'}));
 var yearSlider = ui.Slider({min: 2017, max: 2025, value: 2020, step: 1, style: {stretch: 'horizontal'}});
 panel.add(yearSlider);
@@ -416,11 +449,6 @@ panel.add(yearSlider);
 panel.add(ui.Label('雲被覆率閾値 (%):', {fontWeight: 'bold', margin: '12px 0 4px 0'}));
 var cloudSlider = ui.Slider({min: 5, max: 50, value: 20, step: 5, style: {stretch: 'horizontal'}});
 panel.add(cloudSlider);
-
-// --- 解析範囲の説明 ---
-panel.add(ui.Label('解析範囲:', {fontWeight: 'bold', margin: '12px 0 4px 0'}));
-panel.add(ui.Label('地図上でジオメトリを描画してください。描画しない場合はカガヤンバレー全域を使用します。',
-  {fontSize: '11px', color: 'gray'}));
 
 // --- 結果表示エリア ---
 var resultPanel = ui.Panel({style: {margin: '12px 0 0 0'}});
@@ -437,35 +465,45 @@ function runClassification() {
 
   var YEAR = yearSlider.getValue();
   var CLOUD_THRESHOLD = cloudSlider.getValue();
+  var selectedRegion = regionSelect.getValue();
 
-  // 解析範囲: ジオメトリがあれば使用、なければデフォルト
-  var drawingLayers = Map.drawingTools().layers();
+  // 解析範囲の決定
   var region;
-  if (drawingLayers.length() > 0 && drawingLayers.get(0).geometries().length() > 0) {
-    region = drawingLayers.get(0).toGeometry();
+  if (selectedRegion === 'Custom (Draw on map)') {
+    var drawingLayers = Map.drawingTools().layers();
+    if (drawingLayers.length() > 0 && drawingLayers.get(0).geometries().length() > 0) {
+      region = drawingLayers.get(0).toGeometry();
+    } else {
+      resultPanel.clear();
+      resultPanel.add(ui.Label('Error: 地図上にジオメトリを描画してください', {color: 'red'}));
+      return;
+    }
   } else {
-    region = ee.Geometry.Rectangle([120.5, 16.0, 122.5, 18.8]);
+    var bbox = regions[selectedRegion];
+    region = ee.Geometry.Rectangle(bbox);
   }
 
+  // トレーニングは全国データを使用（regionに関係なく）
+  var trainRegion = ee.Geometry.Rectangle([117, 4, 127, 21]);
+
   // --- Sentinel-1 SAR ---
-  function getS1(startDate, endDate) {
+  function getS1(startDate, endDate, aoi) {
     return ee.ImageCollection('COPERNICUS/S1_GRD')
-      .filterBounds(region)
+      .filterBounds(aoi)
       .filterDate(startDate, endDate)
       .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
       .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
       .select(['VV', 'VH'])
-      .median()
-      .clip(region);
+      .median();
   }
 
   // --- Sentinel-2 ---
-  function getS2(startDate, endDate) {
+  function getS2(startDate, endDate, aoi) {
     var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-      .filterBounds(region)
+      .filterBounds(aoi)
       .filterDate(startDate, endDate)
       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', CLOUD_THRESHOLD));
-    var composite = s2.median().clip(region);
+    var composite = s2.median();
     var ndvi = composite.normalizedDifference(['B8', 'B4']).rename('NDVI');
     var evi = composite.expression(
       '2.5 * ((NIR - RED) / (NIR + 6 * RED - 7.5 * BLUE + 1))',
@@ -478,7 +516,7 @@ function runClassification() {
       .addBands(ndvi).addBands(evi).addBands(ndwi).addBands(mndwi);
   }
 
-  // --- 季節ごとのデータ取得 ---
+  // --- 季節ごとのデータ取得（全国範囲でトレーニング用） ---
   var periods = [
     {start: YEAR+'-01-01', end: YEAR+'-04-30', suffix: '_P1'},
     {start: YEAR+'-05-01', end: YEAR+'-08-31', suffix: '_P2'},
@@ -487,8 +525,8 @@ function runClassification() {
 
   var inputImage = ee.Image([]);
   periods.forEach(function(p) {
-    var s1 = getS1(p.start, p.end);
-    var s2 = getS2(p.start, p.end);
+    var s1 = getS1(p.start, p.end, trainRegion);
+    var s2 = getS2(p.start, p.end, trainRegion);
     var s1Renamed = s1.select(['VV','VH'], ['VV'+p.suffix, 'VH'+p.suffix]);
     var s2Renamed = s2.bandNames().iterate(function(bandName, img) {
       bandName = ee.String(bandName);
@@ -508,7 +546,7 @@ function runClassification() {
     .select('discrete_classification').rename('landcover_ref');
   inputImage = inputImage.addBands(landcover);
 
-  // --- Random Forest ---
+  // --- Random Forest（全国データでトレーニング） ---
   var withRandom = trainingPoints.randomColumn('random', 42);
   var trainData = withRandom.filter(ee.Filter.lt('random', TRAIN_RATIO));
   var testData = withRandom.filter(ee.Filter.gte('random', TRAIN_RATIO));
@@ -520,20 +558,22 @@ function runClassification() {
   var classifier = ee.Classifier.smileRandomForest(NUM_TREES)
     .train({features: trainSamples, classProperty: 'LU', inputProperties: bands});
 
-  var classified = inputImage.classify(classifier);
+  // --- 選択地域のみに分類結果をクリップ ---
+  var classified = inputImage.clip(region).classify(classifier);
 
   // --- 精度検証 ---
   var validated = testSamples.classify(classifier);
   var errorMatrix = validated.errorMatrix('LU', 'classification');
 
-  // --- 可視化 ---
+  // --- 可視化（選択地域のみ） ---
   Map.layers().reset();
   Map.centerObject(region, 8);
-  Map.addLayer(classified.clip(region), {min:1, max:6, palette: luPalette}, 'LULC Map ' + YEAR);
+  Map.addLayer(classified, {min:1, max:6, palette: luPalette}, 'LULC ' + selectedRegion + ' ' + YEAR);
 
   // --- 結果表示 ---
   resultPanel.clear();
   resultPanel.add(ui.Label('Results', {fontWeight: 'bold', margin: '0 0 6px 0'}));
+  resultPanel.add(ui.Label('Region: ' + selectedRegion));
   resultPanel.add(ui.Label('Year: ' + YEAR));
 
   errorMatrix.accuracy().evaluate(function(acc) {
@@ -543,7 +583,7 @@ function runClassification() {
     resultPanel.add(ui.Label('Kappa: ' + k.toFixed(3)));
   });
 
-  // 各クラスの面積
+  // 各クラスの面積（選択地域のみ）
   var areaImage = ee.Image.pixelArea().addBands(classified);
   var areas = areaImage.reduceRegion({
     reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'class'}),
@@ -564,12 +604,12 @@ function runClassification() {
 
   // --- エクスポート ---
   Export.image.toDrive({
-    image: classified.clip(region),
-    description: 'LULC_' + YEAR,
+    image: classified,
+    description: 'LULC_' + selectedRegion.replace(/[^a-zA-Z0-9]/g, '_') + '_' + YEAR,
     region: region, scale: 30, maxPixels: 1e13, fileFormat: 'GeoTIFF'
   });
 
-  print('--- Classification complete for ' + YEAR + ' ---');
+  print('--- Classification complete: ' + selectedRegion + ' ' + YEAR + ' ---');
 }
 
 applyButton.onClick(runClassification);
