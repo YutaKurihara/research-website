@@ -3,15 +3,12 @@
 // 洪水直接被害計算ツール（FwDET + 被害曲線）
 // Oriental Consultants Global - MyProject 第10期
 // ============================================================
-//
-// 前提: 01_LULC_RandomForest.js で作成した土地利用図（GeoTIFF）を
-//        GEE Asset としてアップロード済みであること。
+// 前提:
+//   - 01_LULC_RandomForest.js で作成した土地利用図をGEE Assetにアップロード済み
+//   - 浸水範囲・浸水深は別途SAR-DATで作成しAssetにアップロード済み
+//     （もしくは本コード内のSTEP1で自動生成）
+//   - Hospital, School, NatRoad, MunRoad は必要に応じてAssetを用意
 // ============================================================
-
-// ==================== 固定パラメータ ====================
-var HOUSING_COST_PER_M2 = 10300;
-var RICE_COST_PER_M2 = 0.00696;
-var CORN_COST_PER_M2 = 0.00459;
 
 // ==================== UIパネル ====================
 var panel = ui.Panel({style: {width: '340px', padding: '8px'}});
@@ -22,53 +19,118 @@ panel.add(ui.Label('洪水直接被害計算ツール', {
 }));
 panel.add(ui.Label('Flood Direct Damage Estimation', {fontSize: '12px', color: 'gray'}));
 
-// --- 洪水発生日 ---
-panel.add(ui.Label('洪水発生日 (After):', {fontWeight: 'bold', margin: '14px 0 4px 0'}));
+// --- 入力方式の選択 ---
+panel.add(ui.Label('浸水データ入力:', {fontWeight: 'bold', margin: '14px 0 4px 0'}));
+var inputMode = ui.Select({
+  items: ['SAR画像から自動生成', 'Assetから読み込み'],
+  value: 'SAR画像から自動生成',
+  style: {stretch: 'horizontal'}
+});
+panel.add(inputMode);
+
+// --- SAR自動生成パラメータ ---
+var sarPanel = ui.Panel();
+panel.add(sarPanel);
+
+sarPanel.add(ui.Label('洪水発生日 (After):', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
 var afterYear = ui.Select({items: ['2017','2018','2019','2020','2021','2022','2023','2024','2025'], value: '2020', style: {stretch: 'horizontal'}});
 var afterMonth = ui.Select({items: ['01','02','03','04','05','06','07','08','09','10','11','12'], value: '11', style: {stretch: 'horizontal'}});
 var afterDay = ui.Select({items: (function(){var d=[];for(var i=1;i<=31;i++)d.push(String(i<10?'0'+i:i));return d;})(), value: '13', style: {stretch: 'horizontal'}});
-panel.add(ui.Panel([afterYear, afterMonth, afterDay], ui.Panel.Layout.Flow('horizontal')));
+sarPanel.add(ui.Panel([afterYear, afterMonth, afterDay], ui.Panel.Layout.Flow('horizontal')));
 
-// --- 比較画像日 ---
-panel.add(ui.Label('比較画像日 (Before):', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+sarPanel.add(ui.Label('比較画像日 (Before):', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
 var beforeYear = ui.Select({items: ['2017','2018','2019','2020','2021','2022','2023','2024','2025'], value: '2020', style: {stretch: 'horizontal'}});
 var beforeMonth = ui.Select({items: ['01','02','03','04','05','06','07','08','09','10','11','12'], value: '10', style: {stretch: 'horizontal'}});
 var beforeDay = ui.Select({items: (function(){var d=[];for(var i=1;i<=31;i++)d.push(String(i<10?'0'+i:i));return d;})(), value: '08', style: {stretch: 'horizontal'}});
-panel.add(ui.Panel([beforeYear, beforeMonth, beforeDay], ui.Panel.Layout.Flow('horizontal')));
+sarPanel.add(ui.Panel([beforeYear, beforeMonth, beforeDay], ui.Panel.Layout.Flow('horizontal')));
 
-// --- 衛星軌道 ---
-panel.add(ui.Label('衛星軌道:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+sarPanel.add(ui.Label('衛星軌道:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
 var orbitSelect = ui.Select({items: ['ASCENDING', 'DESCENDING'], value: 'ASCENDING', style: {stretch: 'horizontal'}});
-panel.add(orbitSelect);
+sarPanel.add(orbitSelect);
 
-// --- 偏波 ---
-panel.add(ui.Label('偏波:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+sarPanel.add(ui.Label('偏波:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
 var polSelect = ui.Select({items: ['VV', 'VH'], value: 'VV', style: {stretch: 'horizontal'}});
-panel.add(polSelect);
+sarPanel.add(polSelect);
 
-// --- 閾値 ---
-panel.add(ui.Label('洪水検出閾値:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+sarPanel.add(ui.Label('洪水検出閾値:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
 var threshSlider = ui.Slider({min: 1.0, max: 2.0, value: 1.15, step: 0.05, style: {stretch: 'horizontal'}});
-panel.add(threshSlider);
+sarPanel.add(threshSlider);
 
-// --- 結果表示エリア ---
+// --- Asset入力パラメータ ---
+var assetPanel = ui.Panel();
+panel.add(assetPanel);
+assetPanel.style().set('shown', false);
+
+assetPanel.add(ui.Label('浸水範囲 Asset ID:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+var floodAssetInput = ui.Textbox({value: 'users/kurihara-yt/FloodArea', style: {stretch: 'horizontal'}});
+assetPanel.add(floodAssetInput);
+
+assetPanel.add(ui.Label('浸水深 Asset ID:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+var depthAssetInput = ui.Textbox({value: 'users/kurihara-yt/FloodDepth', style: {stretch: 'horizontal'}});
+assetPanel.add(depthAssetInput);
+
+// --- 土地利用図 ---
+panel.add(ui.Label('土地利用図 Asset ID:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
+var luAssetInput = ui.Textbox({value: 'users/kurihara-yt/LULCmap', style: {stretch: 'horizontal'}});
+panel.add(luAssetInput);
+
+// 入力方式切替
+inputMode.onChange(function(val) {
+  sarPanel.style().set('shown', val === 'SAR画像から自動生成');
+  assetPanel.style().set('shown', val === 'Assetから読み込み');
+});
+
+// --- 結果表示・チャートエリア ---
 var resultPanel = ui.Panel({style: {margin: '12px 0 0 0'}});
 panel.add(resultPanel);
+
+var messagePanel = ui.Panel({
+  layout: ui.Panel.Layout.flow('vertical'),
+  style: {position: 'bottom-left', border: '1px solid gray', padding: '2px'}
+});
+Map.add(messagePanel);
 
 // --- 実行ボタン ---
 var applyButton = ui.Button({label: '実行', style: {stretch: 'horizontal', fontWeight: 'bold'}});
 panel.add(applyButton);
 
+// ==================== 被害曲線（論文準拠） ====================
+// 住宅: GMMA-RAP (2014)
+var calculateBuildingDR = function(floodDepth) {
+  var a = ee.Number(0.24);
+  var b = ee.Number(-1.50);
+  var c = ee.Number(1.45);
+  return a.divide(ee.Number(1).add(b.multiply(floodDepth.subtract(c)).exp()))
+    .subtract(0.02448).max(0).min(0.24);
+};
+
+// コメ: Shrestha et al. (2016)
+var calculateRiceDR = function(image) {
+  var a = ee.Number(0.505);
+  var b = ee.Number(-7.513);
+  var c = ee.Number(0.854);
+  return ee.Image.constant(a).divide(image.subtract(c).multiply(b).exp().add(1))
+    .subtract(0.00082).min(1);
+};
+
+// トウモロコシ: Tariq et al. (2021)
+var calculateCornDR = function(image) {
+  var a = ee.Number(1.44);
+  var b = ee.Number(-2.11);
+  return ee.Image.constant(a).divide(image.multiply(b).exp().add(1))
+    .subtract(0.72).min(0.75);
+};
+
+// ==================== 凡例色 ====================
+var classVis = ['#ADFF2F','#FFD700','#006400','#B8860B','#DC143C','#1E90FF'];
+var bandNames = ['Rice', 'Corn', 'Forest', 'Barren', 'Urban', 'Water'];
+var flood_palette = {min: 0, max: 5, palette: ['#eff3ff','#bdd7e7','#6baed6','#3182bd','#08519c']};
+
 // ==================== 解析関数 ====================
 function runAnalysis() {
   resultPanel.clear();
+  messagePanel.clear();
   resultPanel.add(ui.Label('処理中...', {color: 'blue'}));
-
-  var afterDate_value = ee.Date(afterYear.getValue() + '-' + afterMonth.getValue() + '-' + afterDay.getValue());
-  var beforeDate_value = ee.Date(beforeYear.getValue() + '-' + beforeMonth.getValue() + '-' + beforeDay.getValue());
-  var pass_direction = orbitSelect.getValue();
-  var polarization = polSelect.getValue();
-  var difference_threshold = threshSlider.getValue();
 
   // 解析範囲（ジオメトリ必須）
   var drawingLayers = Map.drawingTools().layers();
@@ -81,230 +143,252 @@ function runAnalysis() {
     return;
   }
 
-  // ============ STEP 1: 浸水範囲の検出（参照コード準拠） ============
+  var flooded, costDepthFilter;
+  var mode = inputMode.getValue();
 
-  var after_start = afterDate_value.format('YYYY-MM-dd');
-  var after_end = afterDate_value.advance(12, 'day').format('YYYY-MM-dd');
-  var before_end = beforeDate_value.advance(1, 'day').format('YYYY-MM-dd');
-  var before_start = beforeDate_value.advance(-11, 'day').format('YYYY-MM-dd');
+  if (mode === 'Assetから読み込み') {
+    // --- Assetから浸水範囲・浸水深を読み込み ---
+    flooded = ee.Image(floodAssetInput.getValue()).clip(aoi);
+    costDepthFilter = ee.Image(depthAssetInput.getValue()).clip(aoi);
+    processResults(aoi, flooded, costDepthFilter);
 
-  // Sentinel-2（参照用表示）
-  var S2_PreEvent = ee.ImageCollection('COPERNICUS/S2')
-    .filterDate(before_start, before_end).filterBounds(aoi)
-    .sort('CLOUD_COVERAGE_ASSESSMENT', false);
-  var S2_PostEvent = ee.ImageCollection('COPERNICUS/S2')
-    .filterDate(after_start, after_end).filterBounds(aoi)
-    .sort('CLOUD_COVERAGE_ASSESSMENT', false);
+  } else {
+    // --- SAR画像から自動生成 ---
+    var afterDate = ee.Date(afterYear.getValue()+'-'+afterMonth.getValue()+'-'+afterDay.getValue());
+    var beforeDate = ee.Date(beforeYear.getValue()+'-'+beforeMonth.getValue()+'-'+beforeDay.getValue());
+    var pass_direction = orbitSelect.getValue();
+    var polarization = polSelect.getValue();
+    var difference_threshold = threshSlider.getValue();
 
-  var rgbVis = {min: 0.0, max: 3000, bands: ['B4', 'B3', 'B2']};
+    var after_start = afterDate.format('YYYY-MM-dd');
+    var after_end = afterDate.advance(12, 'day').format('YYYY-MM-dd');
+    var before_end = beforeDate.advance(1, 'day').format('YYYY-MM-dd');
+    var before_start = beforeDate.advance(-11, 'day').format('YYYY-MM-dd');
 
-  // Sentinel-1 GRD
-  var collection = ee.ImageCollection('COPERNICUS/S1_GRD')
-    .filter(ee.Filter.eq('instrumentMode', 'IW'))
-    .filter(ee.Filter.listContains('transmitterReceiverPolarisation', polarization))
-    .filter(ee.Filter.eq('orbitProperties_pass', pass_direction))
-    .filter(ee.Filter.eq('resolution_meters', 10))
-    .filterBounds(aoi)
-    .select(polarization);
+    // Sentinel-2（参照用）
+    var S2_Pre = ee.ImageCollection('COPERNICUS/S2')
+      .filterDate(before_start, before_end).filterBounds(aoi)
+      .sort('CLOUD_COVERAGE_ASSESSMENT', false);
+    var S2_Post = ee.ImageCollection('COPERNICUS/S2')
+      .filterDate(after_start, after_end).filterBounds(aoi)
+      .sort('CLOUD_COVERAGE_ASSESSMENT', false);
+    var rgbVis = {min: 0, max: 3000, bands: ['B4','B3','B2']};
+    Map.addLayer(S2_Pre.mosaic().clip(aoi), rgbVis, 'Sentinel2: 洪水前', 0);
+    Map.addLayer(S2_Post.mosaic().clip(aoi), rgbVis, 'Sentinel2: 洪水後', 0);
 
-  // After画像の軌道番号に合わせてBefore画像を選択
-  var after_collection = collection.filterDate(after_start, after_end).sort('system:time_start');
-  var OrbitNumber = ee.Image(after_collection.first()).get('relativeOrbitNumber_start');
-  var before_collection = collection.filterDate(before_start, before_end)
-    .sort('system:time_start', false)
-    .filter(ee.Filter.eq('relativeOrbitNumber_start', OrbitNumber));
+    // Sentinel-1
+    var collection = ee.ImageCollection('COPERNICUS/S1_GRD')
+      .filter(ee.Filter.eq('instrumentMode', 'IW'))
+      .filter(ee.Filter.listContains('transmitterReceiverPolarisation', polarization))
+      .filter(ee.Filter.eq('orbitProperties_pass', pass_direction))
+      .filter(ee.Filter.eq('resolution_meters', 10))
+      .filterBounds(aoi).select(polarization);
 
-  // After画像を最も近い1日に絞る
-  var after_date = ee.Date(after_collection.first().get('system:time_start'));
-  after_collection = after_collection.filterDate(
-    after_date.advance(-1, 'day').format('YYYY-MM-dd'),
-    after_date.advance(1, 'day').format('YYYY-MM-dd'));
+    var after_collection = collection.filterDate(after_start, after_end).sort('system:time_start');
+    var OrbitNumber = ee.Image(after_collection.first()).get('relativeOrbitNumber_start');
+    var before_collection = collection.filterDate(before_start, before_end)
+      .sort('system:time_start', false)
+      .filter(ee.Filter.eq('relativeOrbitNumber_start', OrbitNumber));
+    var after_date_exact = ee.Date(after_collection.first().get('system:time_start'));
+    after_collection = after_collection.filterDate(
+      after_date_exact.advance(-1,'day').format('YYYY-MM-dd'),
+      after_date_exact.advance(1,'day').format('YYYY-MM-dd'));
 
-  // Console出力
-  function dates(imgcol, imgcol2) {
-    var range = imgcol.reduceColumns(ee.Reducer.min(), ['system:time_start']);
-    var range2 = imgcol2.reduceColumns(ee.Reducer.max(), ['system:time_start']);
-    return ee.String('from ')
-      .cat(ee.Date(range.get('min')).format('YYYY-MM-dd'))
-      .cat(' to ')
-      .cat(ee.Date(range2.get('max')).format('YYYY-MM-dd'));
+    print(ee.String('S1 Before: ').cat(before_collection.size()));
+    print(ee.String('S1 After: ').cat(after_collection.size()));
+
+    var before = before_collection.mosaic().clip(aoi);
+    var after = after_collection.mosaic().clip(aoi);
+    var before_filtered = before.focal_mean(50, 'circle', 'meters');
+    var after_filtered = after.focal_mean(50, 'circle', 'meters');
+
+    var difference = after_filtered.divide(before_filtered);
+    var difference_binary = difference.gt(difference_threshold);
+
+    var swater = ee.Image('JRC/GSW1_0/GlobalSurfaceWater').select('seasonality');
+    var swater_mask = swater.updateMask(swater.gte(10));
+    var flooded_mask = difference_binary.where(swater_mask, 0);
+    flooded = flooded_mask.updateMask(flooded_mask);
+    var connections = flooded.connectedPixelCount();
+    flooded = flooded.updateMask(connections.gte(8));
+
+    var DEM = ee.Image('WWF/HydroSHEDS/03VFDEM');
+    var terrain = ee.Algorithms.Terrain(DEM);
+    var slope = terrain.select('slope');
+    flooded = flooded.updateMask(slope.lt(5));
+
+    // FwDET浸水深推定
+    var floodExtent = flooded.selfMask();
+    var floodDEM = DEM.updateMask(floodExtent);
+    var floodEdge = floodExtent.focal_max(1).neq(floodExtent).selfMask();
+    var edgeDEM = DEM.updateMask(floodEdge);
+    var waterSurface = edgeDEM
+      .reduceNeighborhood(ee.Reducer.max(), ee.Kernel.circle(500, 'meters'))
+      .updateMask(floodExtent);
+    costDepthFilter = waterSurface.subtract(floodDEM).max(0).focal_mean(3, 'square');
+
+    Map.addLayer(before_filtered, {min:-25, max:0}, 'SAR: 洪水前', 0);
+    Map.addLayer(after_filtered, {min:-25, max:0}, 'SAR: 洪水後', 0);
+
+    processResults(aoi, flooded, costDepthFilter);
   }
+}
 
-  print(ee.String('Sentinel2: Before (').cat(S2_PreEvent.size()).cat(')'), dates(S2_PreEvent, S2_PreEvent));
-  print(ee.String('Sentinel2: After (').cat(S2_PostEvent.size()).cat(')'), dates(S2_PostEvent, S2_PostEvent));
-  print(ee.String('Sentinel1: Before (').cat(before_collection.size()).cat(')'), dates(before_collection, before_collection));
-  print(ee.String('Sentinel1: After (').cat(after_collection.size()).cat(')'), dates(after_collection, after_collection));
-
-  // モザイク・クリップ・スペックル除去
-  var before = before_collection.mosaic().clip(aoi);
-  var after = after_collection.mosaic().clip(aoi);
-  var smoothing_radius = 50;
-  var before_filtered = before.focal_mean(smoothing_radius, 'circle', 'meters');
-  var after_filtered = after.focal_mean(smoothing_radius, 'circle', 'meters');
-
-  // 洪水範囲の計算
-  var difference = after_filtered.divide(before_filtered);
-  var difference_binary = difference.gt(difference_threshold);
-
-  // JRC Surface Water（季節性10ヶ月以上 = 恒常的水域）を除外
-  var swater = ee.Image('JRC/GSW1_0/GlobalSurfaceWater').select('seasonality');
-  var swater_mask = swater.updateMask(swater.gte(10));
-  var flooded_mask = difference_binary.where(swater_mask, 0);
-  var flooded = flooded_mask.updateMask(flooded_mask);
-
-  // 連結8ピクセル以上
-  var connections = flooded.connectedPixelCount();
-  flooded = flooded.updateMask(connections.gte(8));
-
-  // HydroSHEDS DEM で傾斜5度以上を除外
-  var DEM = ee.Image('WWF/HydroSHEDS/03VFDEM');
-  var terrain = ee.Algorithms.Terrain(DEM);
-  var slope = terrain.select('slope');
-  flooded = flooded.updateMask(slope.lt(5));
-
-  // ============ STEP 2: 浸水深の推定（FwDET） ============
-  var floodExtent = flooded.selfMask();
-  var floodDEM = DEM.updateMask(floodExtent);
-  var floodEdge = floodExtent.focal_max(1).neq(floodExtent).selfMask();
-  var edgeDEM = DEM.updateMask(floodEdge);
-  var waterSurface = edgeDEM
-    .reduceNeighborhood(ee.Reducer.max(), ee.Kernel.circle(500, 'meters'))
-    .updateMask(floodExtent);
-  var floodDepth = waterSurface.subtract(floodDEM).max(0).focal_mean(3, 'square');
-
-  // ============ STEP 3: 住宅被害額 ============
-  var buildings = ee.FeatureCollection('GOOGLE/Research/open-buildings/v3/polygons')
-    .filterBounds(aoi);
-  var buildingRaster = buildings
-    .reduceToImage(['area_in_meters'], ee.Reducer.sum())
-    .rename('building_area').updateMask(floodExtent);
-
-  var housingDR = floodDepth.expression(
-    '0.24 / (1 + exp(-1.50 * (FD - 1.45))) - 0.024', {FD: floodDepth}
-  ).max(0);
-  var housingDamage = housingDR.multiply(buildingRaster).multiply(HOUSING_COST_PER_M2).rename('housing_damage');
-
-  // ============ STEP 4: 農作物被害額 ============
-  // LULC マップ（Assetにアップロードしたものに差し替えてください）
-  // var lulc = ee.Image('users/kurihara-yt/LULC_CagayanValley_2020');
-  var lulc = ee.Image('ESA/WorldCover/v200/2021').clip(aoi);
-
-  var riceMask = lulc.eq(1).updateMask(floodExtent);
-  var cornMask = lulc.eq(2).updateMask(floodExtent);
-
-  var riceDR = floodDepth.expression(
-    '0.505 / (1 + exp(-7.513 * FD - 0.854)) - 0.001', {FD: floodDepth}
-  ).max(0).updateMask(riceMask);
-  var riceDamage = riceDR.multiply(RICE_COST_PER_M2).multiply(ee.Image.pixelArea()).rename('rice_damage');
-
-  var cornDR = floodDepth.expression(
-    '1.44 / (1 + exp(-2.11 * FD)) - 0.720', {FD: floodDepth}
-  ).max(0).updateMask(cornMask);
-  var cornDamage = cornDR.multiply(CORN_COST_PER_M2).multiply(ee.Image.pixelArea()).rename('corn_damage');
-
-  // ============ STEP 5: 被災人口（WorldPop） ============
-  var WorldPop = ee.ImageCollection('WorldPop/GP/100m/pop');
-  var popYear = ee.Date(after_start).get('year');
-  var population_count = WorldPop.filterDate(ee.String(popYear)).mosaic().clip(aoi);
-  var flooded_projection = flooded.projection();
-  var population_exposed = population_count
-    .reproject({crs: flooded_projection})
-    .updateMask(flooded)
-    .updateMask(population_count);
-
-  // ============ STEP 6: 被災農地・都市面積（ESA WorldCover） ============
-  var LC = ee.ImageCollection('ESA/WorldCover/v100').first().clip(aoi);
-  var LC_affected = LC.updateMask(flooded).updateMask(LC);
-  var cropland = LC_affected.updateMask(LC_affected.eq(40));
-  var urban = LC_affected.updateMask(LC_affected.eq(50));
-
-  var crop_area_ha = LC_affected.eq(40).multiply(ee.Image.pixelArea())
-    .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, bestEffort: true})
-    .getNumber('Map').divide(10000).round();
-  var urban_area_ha = LC_affected.eq(50).multiply(ee.Image.pixelArea())
-    .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, bestEffort: true})
-    .getNumber('Map').divide(10000).round();
-
-  // ============ STEP 7: 可視化 ============
+// ==================== 被害計算・結果表示 ====================
+function processResults(aoi, flooded, costDepthFilter) {
   Map.layers().reset();
-  Map.centerObject(aoi, 10);
+  Map.centerObject(aoi, 12);
+  Map.setOptions('SATELLITE');
 
-  Map.addLayer(S2_PreEvent.mosaic().clip(aoi), rgbVis, 'Sentinel2: 洪水前', 0);
-  Map.addLayer(S2_PostEvent.mosaic().clip(aoi), rgbVis, 'Sentinel2: 洪水後', 0);
-  Map.addLayer(before_filtered, {min: -25, max: 0}, 'SAR: 洪水前', 0);
-  Map.addLayer(after_filtered, {min: -25, max: 0}, 'SAR: 洪水後', 0);
-  Map.addLayer(difference, {min: 0, max: 2}, '反射強度差', 0);
+  // DEM
+  var DEM = ee.ImageCollection('COPERNICUS/DEM/GLO30').filterBounds(aoi).select('DEM').mosaic();
+  Map.addLayer(DEM, {min:0, max:300}, 'DEM', 0);
+
+  // 浸水深表示
+  Map.addLayer(costDepthFilter, flood_palette, '浸水深', true);
   Map.addLayer(flooded, {palette: '0000FF'}, '浸水範囲', 1);
-  Map.addLayer(floodDepth, {min: 0, max: 3, palette: ['#ffffcc','#fd8d3c','#bd0026']}, '浸水深 (m)');
-  Map.addLayer(population_exposed, {min: 1, max: 50, palette: ['yellow','orange','red']}, '被災人口', 0);
-  Map.addLayer(cropland, {}, '被災農地', 0);
-  Map.addLayer(urban, {}, '被災都市域', 0);
-  Map.addLayer(housingDamage, {min: 0, max: 100000, palette: ['#fee5d9','#de2d26']}, '住宅被害額', 0);
-  Map.addLayer(riceDamage, {min: 0, max: 10, palette: ['#edf8e9','#006d2c']}, 'コメ被害額', 0);
-  Map.addLayer(cornDamage, {min: 0, max: 10, palette: ['#fff7bc','#d95f0e']}, 'トウモロコシ被害額', 0);
 
-  // ============ STEP 8: 結果表示 ============
+  // --- 建物被害（フィーチャーベース、論文準拠） ---
+  var Building = ee.FeatureCollection('GOOGLE/Research/open-buildings/v3/polygons').filterBounds(aoi);
+  Map.addLayer(Building, {color: 'purple'}, '建物', 0, 0.65);
+
+  var buildingFloodDepths = costDepthFilter.unmask(0).reduceRegions({
+    collection: Building, reducer: ee.Reducer.mean(), scale: 30, tileScale: 8
+  }).filter(ee.Filter.notNull(['mean']));
+
+  var buildingDamageRatios = buildingFloodDepths.map(function(building) {
+    var floodDepth = building.getNumber('mean');
+    var damageRatio = calculateBuildingDR(floodDepth);
+    return building.set('damageRatio', damageRatio);
+  });
+
+  var buildingDamageValue = buildingDamageRatios.map(function(building) {
+    var building_area = building.geometry().area();
+    var damageRatio = building.getNumber('damageRatio');
+    var damageValue = building_area.multiply(damageRatio).multiply(10.3).round();
+    return building.set('damageValue', damageValue);
+  });
+
+  var totalBuildingDamageCost = ee.Number(buildingDamageValue.aggregate_sum('damageValue')).round();
+
+  // --- 土地利用図の読み込み ---
+  var LU = ee.Image(luAssetInput.getValue()).clip(aoi);
+  Map.addLayer(LU, {min:1, max:6, palette: classVis}, '土地利用図', 0);
+
+  // --- 土地利用別浸水面積 ---
+  var area = ee.Image.pixelArea().divide(10000);
+  var rice = flooded.updateMask(LU.eq(1)).multiply(area).select([0],['Rice']);
+  var corn = flooded.updateMask(LU.eq(2)).multiply(area).select([0],['Corn']);
+  var forest = flooded.updateMask(LU.eq(3)).multiply(area).select([0],['Forest']);
+  var barren = flooded.updateMask(LU.eq(4)).multiply(area).select([0],['Barren']);
+  var urban_area = flooded.updateMask(LU.eq(5)).multiply(area).select([0],['Urban']);
+  var water_area = flooded.updateMask(LU.eq(6)).multiply(area).select([0],['Water']);
+
+  var landTypes = [rice, corn, forest, barren, urban_area, water_area];
+  var landTypeAreas = landTypes.map(function(landType, i) {
+    var a = landType.reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 30}).get(bandNames[i]);
+    return ee.List([]).add(a);
+  });
+
+  var chart2 = ui.Chart.array.values({array: ee.List(landTypeAreas), axis: 1, xLabels: ['']})
+    .setSeriesNames(bandNames)
+    .setChartType('BarChart')
+    .setOptions({
+      title: '土地利用別浸水面積',
+      titleTextStyle: {fontSize: 14},
+      hAxis: {title: '面積 (ha)', titleTextStyle: {fontSize: 14, italic: false, bold: true}},
+      vAxis: {title: '土地利用', titleTextStyle: {fontSize: 14, italic: false, bold: true}},
+      colors: classVis
+    });
+  messagePanel.widgets().set(0, chart2);
+
+  // --- 農作物被害（画像ベース、論文準拠） ---
+  var riceArea = costDepthFilter.updateMask(LU.eq(1));
+  var cornArea = costDepthFilter.updateMask(LU.eq(2));
+
+  var Rice_damage = calculateRiceDR(riceArea);
+  var Corn_damage = calculateCornDR(cornArea);
+
+  var floodedRiceDepth = Rice_damage.multiply(area);
+  var floodedCornDepth = Corn_damage.multiply(area);
+
+  var rice_price = 69.6;  // '000 PhP/ha
+  var corn_price = 45.9;
+
+  var riceDamageCost = floodedRiceDepth.multiply(rice_price);
+  var cornDamageCost = floodedCornDepth.multiply(corn_price);
+
+  var totalRiceDamageCost = ee.Number(riceDamageCost.reduceRegion({
+    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30
+  }).get('constant')).round();
+
+  var totalCornDamageCost = ee.Number(cornDamageCost.reduceRegion({
+    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30
+  }).get('constant')).round();
+
+  // --- 被害額パイチャート ---
+  var damageCosts = {
+    'Resident': totalBuildingDamageCost,
+    'Rice': totalRiceDamageCost,
+    'Corn': totalCornDamageCost,
+  };
+
+  var damageCostsList = Object.keys(damageCosts).map(function(key) {
+    return ee.Feature(null, {'category': key, 'amount': damageCosts[key]});
+  });
+  var dataTable = ee.FeatureCollection(damageCostsList);
+
+  var chart3 = ui.Chart.feature.byFeature(dataTable, 'category', 'amount')
+    .setChartType('PieChart')
+    .setOptions({
+      title: '被害額内訳',
+      titleTextStyle: {fontSize: 14, italic: false, bold: true},
+      colors: ['#DC143C','#ADFF2F','#FFD700']
+    });
+  messagePanel.widgets().set(1, chart3);
+
+  // --- 合計被害額 ---
+  var Total_value = totalBuildingDamageCost.add(totalRiceDamageCost).add(totalCornDamageCost);
+  messagePanel.widgets().set(2, ui.Label({
+    value: '合計被害額 (千ペソ)', style: {fontSize: 14, fontWeight: 'bold'}
+  }));
+  Total_value.evaluate(function(val) {
+    messagePanel.widgets().set(3, ui.Label(val !== null ? val.toLocaleString() : '-'));
+  });
+
+  // --- 浸水面積 ---
   resultPanel.clear();
   resultPanel.add(ui.Label('解析結果', {fontWeight: 'bold', margin: '0 0 6px 0'}));
 
-  // 浸水面積
   var flood_pixelarea = flooded.multiply(ee.Image.pixelArea());
-  var flood_stats = flood_pixelarea.reduceRegion({
+  flood_pixelarea.reduceRegion({
     reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, bestEffort: true
-  });
-  flood_stats.getNumber(polarization).evaluate(function(val) {
-    if (val !== null && val !== undefined) {
-      resultPanel.add(ui.Label('浸水面積: ' + (val / 10000).toFixed(0) + ' ha'));
-    }
+  }).values().get(0).evaluate(function(val) {
+    if (val) resultPanel.add(ui.Label('浸水面積: ' + (val / 10000).toFixed(0) + ' ha'));
   });
 
-  // 被災人口
-  population_exposed.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: aoi, scale: 92.77, bestEffort: true
-  }).getNumber('population').evaluate(function(val) {
-    if (val !== null && val !== undefined) {
-      resultPanel.add(ui.Label('推定被災人口: ' + Math.round(val) + ' 人'));
-    }
+  // 被害額をUIに表示
+  totalBuildingDamageCost.evaluate(function(val) {
+    if (val) resultPanel.add(ui.Label('住宅被害: ' + (val / 1000).toFixed(0) + ' 千PhP'));
+  });
+  totalRiceDamageCost.evaluate(function(val) {
+    if (val) resultPanel.add(ui.Label('コメ被害: ' + (val / 1000).toFixed(0) + ' 千PhP'));
+  });
+  totalCornDamageCost.evaluate(function(val) {
+    if (val) resultPanel.add(ui.Label('トウモロコシ被害: ' + (val / 1000).toFixed(0) + ' 千PhP'));
   });
 
-  // 被災農地・都市面積
-  crop_area_ha.evaluate(function(val) {
-    if (val !== null) resultPanel.add(ui.Label('被災農地: ' + val + ' ha'));
-  });
-  urban_area_ha.evaluate(function(val) {
-    if (val !== null) resultPanel.add(ui.Label('被災都市域: ' + val + ' ha'));
-  });
-
-  // 被害額
-  function addDamageResult(label, image, bandName) {
-    image.reduceRegion({
-      reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, bestEffort: true
-    }).get(bandName).evaluate(function(val) {
-      if (val !== null && val !== undefined) {
-        resultPanel.add(ui.Label(label + ': ' + (val / 1e6).toFixed(1) + ' 百万PhP'));
-      }
-    });
-  }
-  addDamageResult('住宅被害額', housingDamage, 'housing_damage');
-  addDamageResult('コメ被害額', riceDamage, 'rice_damage');
-  addDamageResult('トウモロコシ被害額', cornDamage, 'corn_damage');
-
-  // ============ エクスポート ============
+  // --- エクスポート ---
   Export.image.toDrive({
     image: flooded, description: 'Flood_extent',
     region: aoi, maxPixels: 1e10
   });
   Export.image.toDrive({
-    image: floodDepth, description: 'Flood_depth',
-    region: aoi, scale: 10, maxPixels: 1e10, fileFormat: 'GeoTIFF'
-  });
-  Export.image.toDrive({
-    image: housingDamage.addBands(riceDamage).addBands(cornDamage),
-    description: 'Damage_estimation',
+    image: costDepthFilter, description: 'Flood_depth',
     region: aoi, scale: 10, maxPixels: 1e10, fileFormat: 'GeoTIFF'
   });
 
-  // KMLエクスポート
+  // 浸水範囲ベクタ
   var flooded_vec = flooded.reduceToVectors({
     scale: 10, geometryType: 'polygon', geometry: aoi,
     eightConnected: false, bestEffort: true, tileScale: 16
@@ -313,6 +397,20 @@ function runAnalysis() {
     collection: flooded_vec, description: 'Flood_extent_vector',
     fileFormat: 'KML', fileNamePrefix: 'Flood'
   });
+
+  // --- 凡例 ---
+  var legend = ui.Panel({style: {position: 'bottom-right', padding: '15px 8px'}});
+  legend.add(ui.Label('浸水深 (m)', {fontSize: '14px', margin: '0 0 4px 0', padding: '0'}));
+  var lon = ee.Image.pixelLonLat().select('latitude');
+  var gradient = lon.multiply((flood_palette.max - flood_palette.min) / 100.0).add(flood_palette.min);
+  var legendImage = gradient.visualize(flood_palette);
+  legend.add(ui.Panel({widgets: [ui.Label(flood_palette.max)]}));
+  legend.add(ui.Thumbnail({
+    image: legendImage, params: {bbox: '0,0,10,100', dimensions: '10x50'},
+    style: {padding: '1px', position: 'bottom-center'}
+  }));
+  legend.add(ui.Panel({widgets: [ui.Label(flood_palette.min)]}));
+  Map.add(legend);
 }
 
 applyButton.onClick(runAnalysis);
