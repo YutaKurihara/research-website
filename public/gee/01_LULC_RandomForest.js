@@ -492,6 +492,7 @@ function runClassification() {
   }
 
   // --- 衛星データ取得関数 ---
+  // --- Sentinel-1 SAR ---
   function getS1(startDate, endDate) {
     return ee.ImageCollection('COPERNICUS/S1_GRD')
       .filterDate(startDate, endDate)
@@ -501,24 +502,31 @@ function runClassification() {
       .median();
   }
 
-  function getS2(startDate, endDate) {
-    var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+  // --- Landsat-8 光学衛星（論文準拠） ---
+  function getLandsat(startDate, endDate) {
+    var l8 = ee.ImageCollection('LANDSAT/LC08/C02/T1_L2')
       .filterDate(startDate, endDate)
-      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', CLOUD_THRESHOLD));
-    var composite = s2.median();
-    var ndvi = composite.normalizedDifference(['B8', 'B4']).rename('NDVI');
+      .filter(ee.Filter.lt('CLOUD_COVER', CLOUD_THRESHOLD))
+      .map(function(img) {
+        // スケーリング
+        var sr = img.select('SR_B.*').multiply(0.0000275).add(-0.2);
+        return sr.copyProperties(img, img.propertyNames());
+      });
+    var composite = l8.median();
+    // 論文Table 2準拠: B1-B7, B9, B10, B11 + NDVI, EVI, NDWI, MNDWI
+    var ndvi = composite.normalizedDifference(['SR_B5', 'SR_B4']).rename('NDVI');
     var evi = composite.expression(
       '2.5 * ((NIR - RED) / (NIR + 6 * RED - 7.5 * BLUE + 1))',
-      {NIR: composite.select('B8'), RED: composite.select('B4'), BLUE: composite.select('B2')}
+      {NIR: composite.select('SR_B5'), RED: composite.select('SR_B4'), BLUE: composite.select('SR_B2')}
     ).rename('EVI');
-    var ndwi = composite.normalizedDifference(['B3', 'B8']).rename('NDWI');
-    var mndwi = composite.normalizedDifference(['B3', 'B11']).rename('MNDWI');
+    var ndwi = composite.normalizedDifference(['SR_B3', 'SR_B5']).rename('NDWI');
+    var mndwi = composite.normalizedDifference(['SR_B3', 'SR_B6']).rename('MNDWI');
     return composite
-      .select(['B2','B3','B4','B5','B6','B7','B8','B8A','B11','B12'])
+      .select(['SR_B1','SR_B2','SR_B3','SR_B4','SR_B5','SR_B6','SR_B7'])
       .addBands(ndvi).addBands(evi).addBands(ndwi).addBands(mndwi);
   }
 
-  // --- 季節ごとの衛星データ（遅延評価: filterBoundsなしでGEEに任せる） ---
+  // --- 季節ごとの衛星データ（論文準拠: 3期間に分割） ---
   var periods = [
     {start: YEAR+'-01-01', end: YEAR+'-04-30', suffix: '_P1'},
     {start: YEAR+'-05-01', end: YEAR+'-08-31', suffix: '_P2'},
@@ -528,21 +536,24 @@ function runClassification() {
   var inputImage = ee.Image([]);
   periods.forEach(function(p) {
     var s1 = getS1(p.start, p.end);
-    var s2 = getS2(p.start, p.end);
+    var l8 = getLandsat(p.start, p.end);
     var s1Renamed = s1.select(['VV','VH'], ['VV'+p.suffix, 'VH'+p.suffix]);
-    var s2Renamed = s2.bandNames().iterate(function(bandName, img) {
+    var l8Renamed = l8.bandNames().iterate(function(bandName, img) {
       bandName = ee.String(bandName);
-      return ee.Image(img).addBands(s2.select([bandName], [bandName.cat(p.suffix)]));
+      return ee.Image(img).addBands(l8.select([bandName], [bandName.cat(p.suffix)]));
     }, ee.Image([]));
-    inputImage = inputImage.addBands(s1Renamed).addBands(ee.Image(s2Renamed));
+    inputImage = inputImage.addBands(s1Renamed).addBands(ee.Image(l8Renamed));
   });
 
-  // --- 地形データ ---
-  var elevation = ee.Image('MERIT/Hydro/v1_0_1').select('elv').rename('elevation');
+  // --- MERIT Hydro 地形データ（論文準拠: 標高, 傾斜, 集水面積） ---
+  var merit = ee.Image('MERIT/Hydro/v1_0_1');
+  var elevation = merit.select('elv').rename('elevation');
   var slopeImg = ee.Terrain.slope(elevation).rename('slope');
-  inputImage = inputImage.addBands(elevation).addBands(slopeImg);
+  var upa = merit.select('upa').rename('flow_accumulation');
+  inputImage = inputImage.addBands(elevation).addBands(slopeImg).addBands(upa);
 
-  // --- 土地被覆参照 ---
+  // --- NAMRIA 土地被覆マップ（論文準拠: GEE上ではCopernicus Land Coverで代用） ---
+  // ※ NAMRIAはGEE Data Catalogに未収録のため、Copernicus 100mで代用
   var landcover = ee.Image('COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019')
     .select('discrete_classification').rename('landcover_ref');
   inputImage = inputImage.addBands(landcover);
