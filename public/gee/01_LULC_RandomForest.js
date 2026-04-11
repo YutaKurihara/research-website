@@ -583,23 +583,17 @@ function runClassification() {
     resultPanel.add(ui.Label('Kappa: ' + k.toFixed(3)));
   });
 
-  // 各クラスの面積（選択地域のみ）
-  var areaImage = ee.Image.pixelArea().addBands(classified);
-  var areas = areaImage.reduceRegion({
-    reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'class'}),
-    geometry: region, scale: 30, maxPixels: 1e13
-  });
-  areas.get('groups').evaluate(function(groups) {
-    resultPanel.add(ui.Label('Area (km²):', {fontWeight: 'bold', margin: '8px 0 4px 0'}));
-    if (groups) {
-      groups.forEach(function(g) {
-        var cls = g['class'];
-        var areaKm2 = (g.sum / 1e6).toFixed(1);
-        if (cls >= 1 && cls <= 6) {
-          resultPanel.add(ui.Label('  ' + luNames[cls-1] + ': ' + areaKm2));
-        }
-      });
-    }
+  // 各土地利用タイプの精度（Producer's / User's Accuracy）
+  errorMatrix.producersAccuracy().evaluate(function(pa) {
+    errorMatrix.consumersAccuracy().evaluate(function(ca) {
+      resultPanel.add(ui.Label('Class Accuracy:', {fontWeight: 'bold', margin: '8px 0 4px 0'}));
+      for (var i = 0; i < luNames.length; i++) {
+        var prod = pa[i] ? (pa[i][0] * 100).toFixed(1) : '-';
+        var user = ca[0] && ca[0].length > i ? (ca[0][i] * 100).toFixed(1) : '-';
+        resultPanel.add(ui.Label('  ' + luNames[i] + ':  Prod ' + prod + '% / User ' + user + '%',
+          {fontSize: '11px'}));
+      }
+    });
   });
 
   // --- エクスポート ---
