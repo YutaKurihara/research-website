@@ -98,20 +98,16 @@ export default function FloodDirectDamageContent() {
           <h4 className="mb-2 text-sm font-semibold">FwDET-GEEとは？</h4>
           <p className="mb-3 text-muted">
             FwDET-GEE（Floodwater Depth Estimation Tool）は、
-            <strong className="text-foreground">浸水した範囲の「深さ」を自動で推定するツール</strong>です。
-            Google Earth Engine上で動作し、衛星画像から得た浸水範囲と地形データ（DEM）を組み合わせて計算します。
-          </p>
-          <p className="mb-3 text-muted">
-            身近な例で言えば、<strong className="text-foreground">お皿に水を注いだとき</strong>を想像してください。
-            お皿の縁（＝浸水域の境界）の水深はゼロで、中心に向かうほど深くなります。
-            FwDETはこれと同じ考え方で、浸水域の端から内側に向かって、地形の高低差を利用して水深を計算していきます。
+            SAR画像から検出した<strong className="text-foreground">浸水範囲と地形データ（DEM）を組み合わせて、
+            各地点の浸水深を自動推定する</strong>Google Earth Engine上のツールです。
+            本研究では、Copernicus DEM GLO-30（相対垂直精度 &lt; 2m）を使用しています。
           </p>
           <p className="mb-2 font-semibold text-foreground">計算の流れ：</p>
           <ol className="ml-4 list-decimal space-y-1 text-muted">
-            <li><strong className="text-foreground">浸水域の端を水深ゼロ</strong>に設定する</li>
-            <li>地形データ（DEM）を使い、端から内側に向かって<strong className="text-foreground">1ピクセルずつ水深を計算</strong>していく</li>
-            <li>各ピクセルでは、周囲8方向の隣接ピクセルの水深を参照して決定する</li>
-            <li>最後にフィルタ処理で異常値を除去し、滑らかな浸水深マップを生成</li>
+            <li><strong className="text-foreground">浸水域の境界を水深ゼロ</strong>の基準線として設定する</li>
+            <li>DEMの標高データを参照し、境界から内側に向かって<strong className="text-foreground">1ピクセルずつ水深を計算</strong>する</li>
+            <li>各ピクセルでは、周囲8方向の隣接ピクセルのうち最も低い水深を参照して決定する</li>
+            <li>3×3ピクセルのローパスフィルタで異常値を平滑化し、最終的な浸水深マップを生成する</li>
           </ol>
         </div>
 
@@ -161,19 +157,15 @@ export default function FloodDirectDamageContent() {
           <h4 className="mb-2 text-sm font-semibold">Random Forestとは？</h4>
           <p className="mb-3 text-muted">
             Random Forest（ランダムフォレスト）は、<strong className="text-foreground">
-            たくさんの「判断の木」を使って多数決で答えを出す</strong>AIの手法です。
+            多数の決定木（Decision Tree）を組み合わせ、多数決で分類を行う</strong>教師あり機械学習アルゴリズムです。
+            本研究では、衛星画像の各ピクセルを6つの土地利用カテゴリ（水田・トウモロコシ畑・森林・裸地・都市・水域）に分類するために使用しました。
           </p>
-          <p className="mb-3 text-muted">
-            例えるなら、<strong className="text-foreground">500人の専門家に同じ衛星画像を見せて「この場所は水田？トウモロコシ畑？森林？」と聞き、
-            最も多い回答を正解とする</strong>ようなイメージです。
-            1人の専門家だけに聞くと間違えることがありますが、500人に聞けば多数決で正解に近づきます。
-          </p>
-          <p className="mb-2 font-semibold text-foreground">なぜ正確なのか：</p>
+          <p className="mb-2 font-semibold text-foreground">本研究での構成：</p>
           <ul className="ml-4 list-disc space-y-1 text-muted">
-            <li>各「木」はデータの<strong className="text-foreground">異なる一部分</strong>を見て判断するため、偏りが少ない</li>
-            <li>1本の木が間違えても、多数決なので<strong className="text-foreground">全体としては正確</strong></li>
-            <li>どの情報（色・形・標高など）が判断に重要かを<strong className="text-foreground">自動で評価</strong>できる</li>
-            <li>本研究では<strong className="text-foreground">500本の決定木</strong>を使用し、精度93%を達成</li>
+            <li><strong className="text-foreground">500本の決定木</strong>を使用（ee.Classifier.smileRandomForest）</li>
+            <li>各決定木がデータのランダムなサブセットで学習するため、<strong className="text-foreground">過学習を抑制</strong></li>
+            <li>入力特徴量: Sentinel-1（VV/VH）、Landsat-8（B1〜B11, NDVI, EVI, NDWI, MNDWI）、MERIT Hydro（標高・傾斜・集水面積）、NAMRIA土地被覆マップ</li>
+            <li>Google Street Viewで収集した教師データ（各カテゴリ80サンプル）で学習し、<strong className="text-foreground">全体精度93%</strong>、カッパ係数0.92を達成</li>
           </ul>
         </div>
 

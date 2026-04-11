@@ -6,6 +6,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/publications", label: "Publications" },
+  { href: "https://yutakurihara.github.io/opendata/", label: "Tools", external: true },
 ];
 
 export default function Header() {
@@ -21,12 +22,23 @@ export default function Header() {
         <ul className="hidden gap-8 md:flex">
           {navItems.map((item) => (
             <li key={item.href}>
-              <Link
-                href={item.href}
-                className="text-sm text-muted transition-colors hover:text-foreground"
-              >
-                {item.label}
-              </Link>
+              {"external" in item ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted transition-colors hover:text-foreground"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="text-sm text-muted transition-colors hover:text-foreground"
+                >
+                  {item.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
@@ -50,13 +62,25 @@ export default function Header() {
         <ul className="border-t border-border px-6 pb-4 md:hidden">
           {navItems.map((item) => (
             <li key={item.href}>
-              <Link
-                href={item.href}
-                className="block py-2 text-sm text-muted hover:text-foreground"
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
+              {"external" in item ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block py-2 text-sm text-muted hover:text-foreground"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="block py-2 text-sm text-muted hover:text-foreground"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
