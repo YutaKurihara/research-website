@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-const basePath = "/images/flood-direct-damage";
+const IMG = process.env.__NEXT_ROUTER_BASEPATH || "";
+const basePath = `${IMG}/images/flood-direct-damage`;
 
 export default function FloodDirectDamageContent() {
   return (

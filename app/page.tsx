@@ -54,7 +54,6 @@ export default function Home() {
           <div>
             <h3 className="mb-1 font-semibold">学歴</h3>
             <ul className="space-y-1 text-muted">
-              <li>2014.03　並木中等教育学校 卒業</li>
               <li>2018.03　東京工業大学 生命理工学部 生命科学科 卒業</li>
               <li>2021.03　東京工業大学 環境・社会理工学院 融合理工学系 地球環境共創コース 修了</li>
               <li>2023.10　政策研究大学院大学 防災学プログラム 博士課程 入学（ICHARM）</li>
@@ -71,19 +70,16 @@ export default function Home() {
           </div>
 
           <div>
-            <h3 className="mb-1 font-semibold">海外経験</h3>
+            <h3 className="mb-1 font-semibold">JICA案件（主な渡航先）</h3>
             <ul className="space-y-1 text-muted">
-              <li>2018　マルタ（1.5か月・語学研修）</li>
-              <li>2019　イタリア（1年・ボローニャ大学 環境工学科 交換留学）</li>
-              <li>2020　メキシコ（1.5か月・語学研修）</li>
+              <li>フィリピン / ホンジュラス / インド / インドネシア / トルコ</li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-1 font-semibold">資格・語学</h3>
+            <h3 className="mb-1 font-semibold">語学</h3>
             <ul className="space-y-1 text-muted">
-              <li>PCM手法（計画・立案コース）</li>
-              <li>TOEIC 895点 / 英語 DELE B1（スペイン語）</li>
+              <li>TOEIC 895点 / DELE B1（スペイン語）</li>
             </ul>
           </div>
 
