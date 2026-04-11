@@ -15,7 +15,7 @@ export const profile = {
   affiliation: "GRIPS",
   tagline: "Disaster Risk Reduction / Probabilistic Forecasting",
   links: {
-    github: "https://github.com/Kurihara-and-GRIPS",
+    github: "https://github.com/YutaKurihara",
     orcid: "https://orcid.org/0009-0001-8899-3400",
     note: "https://note.com/hemingway_",
   },
