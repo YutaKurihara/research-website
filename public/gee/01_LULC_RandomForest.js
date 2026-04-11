@@ -614,7 +614,7 @@ function runClassification() {
   // --- エクスポート ---
   Export.image.toDrive({
     image: classified,
-    description: 'LULC_' + selectedRegion.replace(/[^a-zA-Z0-9]/g, '_') + '_' + YEAR,
+    description: 'LULCmap',
     region: region, scale: 30, maxPixels: 1e13, fileFormat: 'GeoTIFF'
   });
 
