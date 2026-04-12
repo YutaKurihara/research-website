@@ -5,6 +5,13 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "flood-risk-central-asia",
+    title: "中央アジアにおける大規模洪水リスク評価 — データ不足地域への適用",
+    date: "2025-04-12",
+    description:
+      "中央アジア5カ国を対象とした初の広域確率論的洪水リスク評価。グローバルデータとローカルデータの統合、10,000年合成洪水カタログ、気候変動影響の地域差を解説。",
+  },
+  {
     slug: "sar-flood-mapping",
     title: "SAR衛星画像による洪水範囲の抽出手法",
     date: "2025-04-12",
