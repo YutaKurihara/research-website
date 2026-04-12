@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yutakurihara.github.io/research-website/sitemap.xml

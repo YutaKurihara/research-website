@@ -14,13 +14,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://yutakurihara.github.io/research-website";
+
 export const metadata: Metadata = {
   title: {
-    default: "Kurihara Yuta",
+    default: "Kurihara Yuta | Disaster Risk Reduction Researcher",
     template: "%s | Kurihara Yuta",
   },
   description:
-    "Disaster risk reduction, probabilistic forecasting, and remote sensing research.",
+    "Research portfolio of Kurihara Yuta. Flood risk assessment, probabilistic rainfall forecasting, remote sensing, climate change impact analysis. Oriental Consultants Global / GRIPS ICHARM.",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    title: "Kurihara Yuta | Disaster Risk Reduction Researcher",
+    description:
+      "Flood risk assessment, probabilistic forecasting, remote sensing, and climate change impact analysis in Southeast Asia.",
+    url: siteUrl,
+    siteName: "Kurihara Yuta Research",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Kurihara Yuta | Disaster Risk Reduction Researcher",
+    description:
+      "Flood risk assessment, probabilistic forecasting, remote sensing research.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
 };
 
 export default function RootLayout({
