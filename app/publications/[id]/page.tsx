@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { publications } from "@/lib/data";
 import { notFound } from "next/navigation";
-import FloodDirectDamageContent from "@/lib/flood-direct-damage-content";
 
 export function generateStaticParams() {
   return publications.map((p) => ({ id: p.id }));
@@ -87,13 +86,9 @@ export default async function PublicationDetailPage({
       <hr className="border-border" />
 
       <section className="py-8">
-        {pub.id === "flood-direct-damage" ? (
-          <FloodDirectDamageContent />
-        ) : (
-          <div className="text-sm leading-relaxed">
-            <DetailContent markdown={pub.details} />
-          </div>
-        )}
+        <div className="text-sm leading-relaxed">
+          <DetailContent markdown={pub.details} />
+        </div>
       </section>
     </div>
   );

@@ -6,6 +6,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/publications", label: "Publications" },
+  { href: "/blog", label: "Blog" },
   { href: "https://yutakurihara.github.io/MyProject/", label: "MyProject", external: true },
 ];
 
