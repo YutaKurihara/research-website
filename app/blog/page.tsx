@@ -5,6 +5,13 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "fwdet",
+    title: "FwDET — 衛星画像から浸水深を推定するツールの解説",
+    date: "2025-04-12",
+    description:
+      "浸水範囲マップとDEMから浸水深を推定するFwDET（Floodwater Depth Estimation Tool）のアルゴリズム・検証結果・限界を、原著論文をもとに整理。",
+  },
+  {
     slug: "flood-direct-damage",
     title: "衛星画像を用いた洪水直接被害評価手法の解説",
     date: "2025-02-01",
