@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+
+const IMG = process.env.__NEXT_ROUTER_BASEPATH || "";
+const img = (name: string) => `${IMG}/images/blog-fwdet/${name}`;
 
 export const metadata: Metadata = {
   title: "FwDET - 衛星画像から浸水深を推定するツールの解説",
@@ -78,6 +82,13 @@ export default function FwDETBlogPost() {
             浸水域内の各ピクセルの地盤標高との差分から水深を計算することです。
           </p>
 
+          <figure className="my-6">
+            <Image src={img("fwdet_concept.jpg")} alt="FwDETの概念図: 浸水域の境界を水深ゼロとし、DEMとの差分で水深を算出" width={1200} height={540} className="w-full rounded-lg border border-border" />
+            <figcaption className="mt-2 text-xs text-muted">
+              FwDETの概念: 浸水域の境界（赤点）を水深ゼロの基準とし、推定水面（青破線）と地盤（DEM）の差分から各地点の水深を算出する。
+            </figcaption>
+          </figure>
+
           <div className="space-y-4">
             <Step num={1} title="浸水域の境界を特定">
               浸水範囲ポリゴンをラインに変換し、DEMのグリッドに合わせてラスタ化します。
@@ -111,6 +122,13 @@ export default function FwDETBlogPost() {
               各浸水ピクセルの水深を以下の式で計算します。
             </Step>
           </div>
+
+          <figure className="my-6">
+            <Image src={img("fwdet_steps.jpg")} alt="FwDETアルゴリズムの3ステップ: 境界検出、Cost Allocation、水深計算" width={1200} height={400} className="w-full rounded-lg border border-border" />
+            <figcaption className="mt-2 text-xs text-muted">
+              FwDETアルゴリズムの流れ: (左) 浸水域の境界セルを特定、(中) 各内部セルに最寄り境界の標高を割り当て、(右) 水深を計算。
+            </figcaption>
+          </figure>
 
           <div className="mt-4 rounded-md border border-border bg-accent-light p-4">
             <p className="font-mono text-xs text-muted">
@@ -155,6 +173,13 @@ export default function FwDETBlogPost() {
               </tbody>
             </table>
           </div>
+
+          <figure className="my-6">
+            <Image src={img("fwdet_validation.jpg")} alt="FwDET v2.0の検証結果: 沿岸0.18m、河川0.31mの平均誤差" width={840} height={480} className="mx-auto max-w-lg w-full rounded-lg border border-border" />
+            <figcaption className="mt-2 text-xs text-muted">
+              FwDET v2.0と水理モデルの比較。沿岸（Portsmouth-Norfolk）で平均絶対誤差0.18m、河川（Brazos River）で0.31m。
+            </figcaption>
+          </figure>
 
           <p className="mt-3 text-muted">
             沿岸洪水で平均誤差0.18m、河川洪水で0.31mという結果は、
