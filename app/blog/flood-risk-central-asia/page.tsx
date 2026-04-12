@@ -253,37 +253,6 @@ export default function CentralAsiaFloodRiskPost() {
 
         <section>
           <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
-            自分の研究との関連
-          </h2>
-          <ul className="ml-4 list-disc space-y-2 text-muted">
-            <li>
-              <strong className="text-foreground">データ不足地域への適用</strong>:
-              フィリピン・カガヤン川流域でも流量観測の欠如が課題。
-              ERA5-LandやGSMaPなどグローバルデータセットの活用戦略が参考になる。
-            </li>
-            <li>
-              <strong className="text-foreground">脆弱性関数のローカライズ</strong>:
-              自身の研究で使用しているGMMA-RAPの被害曲線も、フィリピンの建物構造に特化した
-              ローカルデータに基づいている。本論文のINSYDEモデルによるカスタマイズ手法は、
-              他国への展開時の参考になる。
-            </li>
-            <li>
-              <strong className="text-foreground">確率論的アプローチ</strong>:
-              自身のBMA研究も不確実性の定量化を扱っており、
-              本論文の10,000年合成カタログのような確率論的リスク評価との親和性が高い。
-            </li>
-            <li>
-              <strong className="text-foreground">気候変動影響の不均一性</strong>:
-              PDF matching法によるバイアス補正と、地域ごとに異なる気候変動影響の知見は、
-              カガヤン川流域の気候変動評価にも示唆を与える。
-            </li>
-          </ul>
-        </section>
-
-        <hr className="border-border" />
-
-        <section>
-          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
             限界
           </h2>
           <ul className="ml-4 list-disc space-y-2 text-muted">
