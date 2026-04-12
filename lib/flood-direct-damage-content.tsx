@@ -29,7 +29,7 @@ export default function FloodDirectDamageContent() {
         </p>
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.1_Diagram.png`}
+            src={`${basePath}/Fig.1_Diagram.jpg`}
             alt="研究手法の全体フロー図"
             width={1200}
             height={400}
@@ -50,7 +50,7 @@ export default function FloodDirectDamageContent() {
         </p>
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.2_StudyArea.png`}
+            src={`${basePath}/Fig.2_StudyArea.jpg`}
             alt="対象地域の地図"
             width={800}
             height={800}
@@ -114,7 +114,7 @@ export default function FloodDirectDamageContent() {
         <h3 className="mb-2 mt-5 font-semibold">浸水マッピングの結果</h3>
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.3_FloodMap.png`}
+            src={`${basePath}/Fig.3_FloodMap.jpg`}
             alt="浸水深マップ"
             width={1200}
             height={600}
@@ -132,7 +132,7 @@ export default function FloodDirectDamageContent() {
 
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.4_FloodDepth.png`}
+            src={`${basePath}/Fig.4_FloodDepth.jpg`}
             alt="浸水深別の面積分布"
             width={600}
             height={400}
@@ -185,7 +185,7 @@ export default function FloodDirectDamageContent() {
 
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.5_Samples.png`}
+            src={`${basePath}/Fig.5_Samples.jpg`}
             alt="教師データの収集例"
             width={1200}
             height={600}
@@ -206,7 +206,7 @@ export default function FloodDirectDamageContent() {
         <div className="grid gap-4 sm:grid-cols-2">
           <figure>
             <Image
-              src={`${basePath}/Fig.6_LULCMap.png`}
+              src={`${basePath}/Fig.6_LULCMap.jpg`}
               alt="土地利用マップ"
               width={400}
               height={600}
@@ -218,7 +218,7 @@ export default function FloodDirectDamageContent() {
           </figure>
           <figure>
             <Image
-              src={`${basePath}/Fig.7_LULCerror.png`}
+              src={`${basePath}/Fig.7_LULCerror.jpg`}
               alt="分類精度評価"
               width={400}
               height={600}
@@ -304,7 +304,7 @@ export default function FloodDirectDamageContent() {
 
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.8_RoadsDamageCurve.png`}
+            src={`${basePath}/Fig.8_RoadsDamageCurve.jpg`}
             alt="道路の被害曲線"
             width={1200}
             height={500}
@@ -320,7 +320,7 @@ export default function FloodDirectDamageContent() {
         <h2 className="mb-3 text-lg font-bold">主な結果</h2>
         <figure className="my-4">
           <Image
-            src={`${basePath}/Fig.10_FloodDamageResults.png`}
+            src={`${basePath}/Fig.10_FloodDamageResults.jpg`}
             alt="被害評価結果"
             width={1200}
             height={600}
