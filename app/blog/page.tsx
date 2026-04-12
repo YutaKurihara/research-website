@@ -5,6 +5,13 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "sar-flood-mapping",
+    title: "SAR衛星画像による洪水範囲の抽出手法",
+    date: "2025-04-12",
+    description:
+      "Sentinel-1 SAR画像とNDFI（正規化差分洪水指数）を用いた洪水範囲の自動検出手法を、Cian et al. (2018) の論文をもとに解説。",
+  },
+  {
     slug: "fwdet",
     title: "FwDET — 衛星画像から浸水深を推定するツールの解説",
     date: "2025-04-12",
