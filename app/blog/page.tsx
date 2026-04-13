@@ -5,6 +5,13 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "global-flood-mapping-sar",
+    title: "10年分のSARデータで世界の洪水を地図化する — 深層学習による全球洪水データセット",
+    date: "2025-04-13",
+    description:
+      "Microsoft AI for Good Labが10年分のSentinel-1 SARアーカイブに深層学習を適用し、既存データセットより71%多い洪水域を検出した全球洪水データセットを構築。Nature Communications掲載。",
+  },
+  {
     slug: "flood-risk-central-asia",
     title: "中央アジアにおける大規模洪水リスク評価 — データ不足地域への適用",
     date: "2025-04-12",
