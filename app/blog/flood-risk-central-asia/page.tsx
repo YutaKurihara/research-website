@@ -27,6 +27,9 @@ export default function CentralAsiaFloodRiskPost() {
             Ceresa, P. et al. (2025). Large-scale flood risk assessment in data-scarce areas: an application to Central Asia.
             <em> Natural Hazards and Earth System Sciences</em>, 25, 403-428.
           </p>
+          <a href="https://doi.org/10.5194/nhess-25-403-2025" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-highlight hover:underline">
+            DOI: 10.5194/nhess-25-403-2025
+          </a>
         </div>
       </section>
 

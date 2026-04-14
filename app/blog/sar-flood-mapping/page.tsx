@@ -30,6 +30,9 @@ export default function SarFloodMappingBlogPost() {
           <p className="mt-3 text-xs text-muted">
             Cian, F., Marconcini, M., & Ceccato, P. (2018) の NDFI手法を中心に整理
           </p>
+          <a href="https://doi.org/10.1016/j.rse.2018.03.006" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-highlight hover:underline">
+            DOI: 10.1016/j.rse.2018.03.006
+          </a>
         </div>
       </section>
 

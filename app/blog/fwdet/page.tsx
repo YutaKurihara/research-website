@@ -30,6 +30,9 @@ export default function FwDETBlogPost() {
           <p className="mt-3 text-xs text-muted">
             Cohen, S. et al. (2018, 2019) / Peter, B.G. et al. (2022) の論文をもとに整理
           </p>
+          <a href="https://doi.org/10.5194/nhess-19-2053-2019" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-highlight hover:underline">
+            DOI: 10.5194/nhess-19-2053-2019
+          </a>
         </div>
       </section>
 

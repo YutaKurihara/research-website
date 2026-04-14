@@ -26,9 +26,11 @@ export default function FloodDamageBlogPost() {
           </h1>
           <p className="mt-3 text-xs text-muted">
             Kurihara, Y., Miyamoto, M., Sunakawa, R. &middot;
-            International Journal of Disaster Risk Reduction &middot;
-            DOI: 10.1016/j.ijdrr.2024.105067
+            International Journal of Disaster Risk Reduction
           </p>
+          <a href="https://doi.org/10.1016/j.ijdrr.2024.105067" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-highlight hover:underline">
+            DOI: 10.1016/j.ijdrr.2024.105067
+          </a>
         </div>
       </section>
 

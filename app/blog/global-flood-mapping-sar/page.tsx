@@ -27,6 +27,9 @@ export default function GlobalFloodMappingSarPost() {
             Misra, A. et al. (2025). Mapping global floods with 10 years of satellite radar data.
             <em> Nature Communications</em>, 16, 5762.
           </p>
+          <a href="https://doi.org/10.1038/s41467-025-60973-1" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-highlight hover:underline">
+            DOI: 10.1038/s41467-025-60973-1
+          </a>
         </div>
       </section>
 
