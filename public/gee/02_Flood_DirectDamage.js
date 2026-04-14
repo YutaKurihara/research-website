@@ -218,25 +218,22 @@ function runAnalysis() {
     flooded = flooded.updateMask(slope.lt(5));
 
     // FwDET浸水深推定（オリジナルFwDET-GEEコード準拠、cumulativeCost法）
-    var fill = DEM; // HydroSHEDS DEM（傾斜フィルタと同じDEMを使用）
+    // DEMの投影とスケールを取得
+    var fill = DEM.clip(aoi);
     var projection = fill.projection();
-    var flood_image = flooded.multiply(0); // 浸水域をマスク値0で表現
+    var resolution = projection.nominalScale();
 
-    // JRC水域を浸水域に追加
-    var jrc = ee.Image('JRC/GSW1_1/GlobalSurfaceWater').select('occurrence').clip(aoi);
-    var w = jrc.reproject(projection);
-    var waterFill = flood_image.mask().where(w.gt(0), 1);
-    flood_image = waterFill.updateMask(waterFill.eq(1)).multiply(0);
-    flood_image = flood_image.reproject(projection);
+    // 浸水域を0値の画像に変換（DEM投影に合わせる）
+    var flood_image = flooded.multiply(0).reproject(projection);
 
-    // cumulativeCostによる水面標高の補間（FwDET v2.0のcost allocation法）
+    // cumulativeCostによる水面標高の補間
     var mod = fill.updateMask(flood_image.mask().eq(0));
     var source = mod.mask();
-    var val = 10000;
-    var push = 5000;
-    var cost0 = ee.Image(val).where(source, 0).cumulativeCost(source, push);
-    var cost1 = ee.Image(val).where(source, 1).cumulativeCost(source, push);
-    var cost2 = mod.unmask(val).cumulativeCost(source, push);
+    var costVal = 10000;
+    var push = 50000; // 50kmまで伝播（広い氾濫原に対応）
+    var cost0 = ee.Image(costVal).where(source, 0).cumulativeCost(source, push);
+    var cost1 = ee.Image(costVal).where(source, 1).cumulativeCost(source, push);
+    var cost2 = mod.unmask(costVal).cumulativeCost(source, push);
     var costFill = cost2.subtract(cost0).divide(cost1.subtract(cost0));
     var costSurface = mod.unmask(0).add(costFill);
 
@@ -245,7 +242,6 @@ function runAnalysis() {
     var costDepth = costSurface.subtract(fill)
       .rename('FwDET')
       .convolve(boxcar)
-      .reproject(projection)
       .updateMask(flood_image.eq(0));
     costDepthFilter = costDepth.where(costDepth.lt(0), 0);
 
@@ -308,7 +304,7 @@ function processResults(aoi, flooded, costDepthFilter) {
 
   var landTypes = [rice, corn, forest, barren, urban_area, water_area];
   var landTypeAreas = landTypes.map(function(landType, i) {
-    var a = landType.reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 30}).get(bandNames[i]);
+    var a = landType.reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 30, bestEffort: true}).get(bandNames[i]);
     return ee.List([]).add(a);
   });
 
@@ -341,11 +337,11 @@ function processResults(aoi, flooded, costDepthFilter) {
   var cornDamageCost = floodedCornDepth.multiply(corn_price);
 
   var totalRiceDamageCost = ee.Number(riceDamageCost.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30
+    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30, bestEffort: true
   }).get('constant')).round();
 
   var totalCornDamageCost = ee.Number(cornDamageCost.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30
+    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30, bestEffort: true
   }).get('constant')).round();
 
   // --- 被害額パイチャート ---
@@ -369,35 +365,48 @@ function processResults(aoi, flooded, costDepthFilter) {
     });
   messagePanel.widgets().set(1, chart3);
 
-  // --- 合計被害額 ---
-  var Total_value = totalBuildingDamageCost.add(totalRiceDamageCost).add(totalCornDamageCost);
-  messagePanel.widgets().set(2, ui.Label({
-    value: '合計被害額 (千ペソ)', style: {fontSize: 14, fontWeight: 'bold'}
-  }));
-  Total_value.evaluate(function(val) {
-    messagePanel.widgets().set(3, ui.Label(val !== null ? val.toLocaleString() : '-'));
-  });
-
-  // --- 浸水面積 ---
+  // --- 結果表示 ---
   resultPanel.clear();
   resultPanel.add(ui.Label('解析結果', {fontWeight: 'bold', margin: '0 0 6px 0'}));
 
+  // 浸水面積
   var flood_pixelarea = flooded.multiply(ee.Image.pixelArea());
   flood_pixelarea.reduceRegion({
-    reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, bestEffort: true
+    reducer: ee.Reducer.sum(), geometry: aoi, scale: 30, bestEffort: true
   }).values().get(0).evaluate(function(val) {
-    if (val) resultPanel.add(ui.Label('浸水面積: ' + (val / 10000).toFixed(0) + ' ha'));
+    if (val !== null && val !== undefined) {
+      resultPanel.add(ui.Label('浸水面積: ' + (val / 10000).toFixed(0) + ' ha'));
+    }
   });
 
   // 被害額をUIに表示
   totalBuildingDamageCost.evaluate(function(val) {
-    if (val) resultPanel.add(ui.Label('住宅被害: ' + (val / 1000).toFixed(0) + ' 千PhP'));
+    if (val !== null && val !== undefined) {
+      resultPanel.add(ui.Label('住宅被害: ' + Math.round(val).toLocaleString() + ' 千PhP'));
+    } else {
+      resultPanel.add(ui.Label('住宅被害: 計算中...'));
+    }
   });
   totalRiceDamageCost.evaluate(function(val) {
-    if (val) resultPanel.add(ui.Label('コメ被害: ' + (val / 1000).toFixed(0) + ' 千PhP'));
+    if (val !== null && val !== undefined) {
+      resultPanel.add(ui.Label('コメ被害: ' + Math.round(val).toLocaleString() + ' 千PhP'));
+    }
   });
   totalCornDamageCost.evaluate(function(val) {
-    if (val) resultPanel.add(ui.Label('トウモロコシ被害: ' + (val / 1000).toFixed(0) + ' 千PhP'));
+    if (val !== null && val !== undefined) {
+      resultPanel.add(ui.Label('トウモロコシ被害: ' + Math.round(val).toLocaleString() + ' 千PhP'));
+    }
+  });
+
+  // 合計被害額
+  var Total_value = totalBuildingDamageCost.add(totalRiceDamageCost).add(totalCornDamageCost);
+  Total_value.evaluate(function(val) {
+    if (val !== null && val !== undefined) {
+      messagePanel.widgets().set(2, ui.Label({
+        value: '合計被害額: ' + Math.round(val).toLocaleString() + ' 千ペソ',
+        style: {fontSize: 14, fontWeight: 'bold'}
+      }));
+    }
   });
 
   // --- エクスポート ---
