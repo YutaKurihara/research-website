@@ -336,8 +336,8 @@ function runAnalysis() {
     var connections = flooded.connectedPixelCount();
     flooded = flooded.updateMask(connections.gte(8));
 
-    // Copernicus DEM GLO-30（30m解像度）
-    var DEM = ee.ImageCollection('COPERNICUS/DEM/GLO30').select('DEM').mosaic().setDefaultProjection('EPSG:4326', null, 30);
+    // Copernicus DEM GLO-30 を90mにリサンプリング
+    var DEM = ee.ImageCollection('COPERNICUS/DEM/GLO30').select('DEM').mosaic().setDefaultProjection('EPSG:4326', null, 90);
     var terrain = ee.Algorithms.Terrain(DEM);
     var slope = terrain.select('slope');
     flooded = flooded.updateMask(slope.lt(5));
