@@ -342,13 +342,14 @@ function runAnalysis() {
     flooded = flooded.updateMask(slope.lt(5));
 
     // FwDET浸水深推定（オリジナルFwDET-GEEコード準拠、cumulativeCost法）
-    // DEMの投影とスケールを取得
-    var fill = DEM.clip(aoi);
+    var area = ee.Feature(aoi).geometry().bounds().buffer(1000).bounds();
+    var fill = DEM.clip(area);
     var projection = fill.projection();
-    var resolution = projection.nominalScale();
 
-    // 浸水域を0値の画像に変換（DEM投影に合わせる）
-    var flood_image = flooded.multiply(0).reproject(projection);
+    // 浸水域をDEMスケールに合わせて変換（reprojectはclip後の範囲のみ）
+    var flood_image = flooded.multiply(0)
+      .reduceResolution({reducer: ee.Reducer.mode(), maxPixels: 256})
+      .reproject(projection);
 
     // cumulativeCostによる水面標高の補間
     var mod = fill.updateMask(flood_image.mask().eq(0));
