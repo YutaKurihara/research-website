@@ -71,7 +71,7 @@ assetPanel.add(depthAssetInput);
 
 // --- 土地利用図 ---
 panel.add(ui.Label('土地利用図 Asset ID:', {fontWeight: 'bold', margin: '10px 0 4px 0'}));
-var luAssetInput = ui.Textbox({value: 'projects/ee-kurihara-yt/assets/LULC', style: {stretch: 'horizontal'}});
+var luAssetInput = ui.Textbox({value: 'projects/user-id/assets/LULC', style: {stretch: 'horizontal'}});
 panel.add(luAssetInput);
 
 // 入力方式切替
