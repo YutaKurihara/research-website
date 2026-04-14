@@ -387,8 +387,14 @@ function processResults(aoi, flooded, costDepthFilter) {
   Map.addLayer(DEM, {min:0, max:300}, 'DEM', 0);
 
   // 浸水深表示
-  Map.addLayer(costDepthFilter, flood_palette, '浸水深', true);
+  // AOI表示
+  var aoiFC = ee.FeatureCollection([ee.Feature(aoi)]);
+  var redOutline = {color: 'FF0000', width: 2, fillColor: '00000000'};
+  Map.addLayer(aoiFC.style(redOutline), {}, '解析範囲 (AOI)', 1);
+
+  // 浸水範囲 → 浸水深の順（浸水深が上に表示）
   Map.addLayer(flooded, {palette: '0000FF'}, '浸水範囲', 1);
+  Map.addLayer(costDepthFilter, flood_palette, '浸水深', true);
 
   // --- 建物被害（フィーチャーベース、論文準拠） ---
   var Building = ee.FeatureCollection('GOOGLE/Research/open-buildings/v3/polygons').filterBounds(aoi);
@@ -551,6 +557,12 @@ function processResults(aoi, flooded, costDepthFilter) {
   Export.table.toDrive({
     collection: flooded_vec, description: 'Flood_extent_vector',
     fileFormat: 'KML', fileNamePrefix: 'Flood'
+  });
+
+  // AOIエクスポート
+  Export.table.toDrive({
+    collection: aoiFC, description: 'AOI',
+    fileFormat: 'SHP', fileNamePrefix: 'AOI'
   });
 
   // --- 凡例 ---
