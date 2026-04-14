@@ -162,7 +162,14 @@ provinceSelect.onChange(function(provName) {
   if (provName !== '-- 全域 --') {
     // Province境界を取得し、その中にあるMunicipalityを検索
     var provGeom = phProv.filter(ee.Filter.eq('ADM2_NAME', provName)).geometry();
-    var munsInProv = geob2.filterBounds(provGeom);
+    // geoBoundaries ADM2にはProvinceとMunicipalityが混在するため、
+    // Province名と一致するものを除外してMunicipalityのみを抽出
+    var provinceNames = [];
+    Object.keys(regionProvinces).forEach(function(r) {
+      provinceNames = provinceNames.concat(regionProvinces[r]);
+    });
+    var munsInProv = geob2.filterBounds(provGeom)
+      .filter(ee.Filter.inList('shapeName', provinceNames).not());
     munsInProv.aggregate_array('shapeName').sort().evaluate(function(names) {
       if (names && names.length > 0) {
         munSelect.items().reset(['-- 全域 --'].concat(names));
@@ -347,9 +354,11 @@ function runAnalysis() {
     var fill = DEM.clip(area);
     var projection = fill.projection();
 
-    // 浸水域をDEMスケールに合わせて変換（reprojectはclip後の範囲のみ）
+    // 浸水域をDEMスケールに合わせて変換
+    // Sentinel-1のネイティブ投影を設定してからreduceResolution
     var flood_image = flooded.multiply(0)
-      .reduceResolution({reducer: ee.Reducer.mode(), maxPixels: 256})
+      .setDefaultProjection('EPSG:4326', null, 10)
+      .reduceResolution({reducer: ee.Reducer.mode(), maxPixels: 1024})
       .reproject(projection);
 
     // cumulativeCostによる水面標高の補間
