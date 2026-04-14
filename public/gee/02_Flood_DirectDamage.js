@@ -230,7 +230,7 @@ function runAnalysis() {
     var mod = fill.updateMask(flood_image.mask().eq(0));
     var source = mod.mask();
     var costVal = 10000;
-    var push = 50000; // 50kmまで伝播（広い氾濫原に対応）
+    var push = 5000;
     var cost0 = ee.Image(costVal).where(source, 0).cumulativeCost(source, push);
     var cost1 = ee.Image(costVal).where(source, 1).cumulativeCost(source, push);
     var cost2 = mod.unmask(costVal).cumulativeCost(source, push);
