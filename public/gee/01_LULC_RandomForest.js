@@ -614,7 +614,7 @@ function runClassification() {
   // --- エクスポート ---
   Export.image.toDrive({
     image: classified,
-    description: 'LULCmap',
+    description: 'LULC',
     region: region, scale: 30, maxPixels: 1e13, fileFormat: 'GeoTIFF'
   });
 
