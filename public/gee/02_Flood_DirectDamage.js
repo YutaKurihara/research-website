@@ -14,6 +14,10 @@
 var gaul2 = ee.FeatureCollection('FAO/GAUL/2015/level2');
 var phProv = gaul2.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
 
+// geoBoundaries ADM2（Municipality/City レベル）
+var geob2 = ee.FeatureCollection('WM/geoLab/geoBoundaries/600/ADM2')
+  .filter(ee.Filter.eq('shapeGroup', 'PHL'));
+
 var regionProvinces = {
   'Region I - Ilocos': ['Ilocos Norte','Ilocos Sur','La Union','Pangasinan'],
   'Region II - Cagayan Valley': ['Batanes','Cagayan','Isabela','Nueva Vizcaya','Quirino'],
@@ -151,14 +155,19 @@ regionSelect.onChange(function(regionName) {
   munSelect.setValue('-- 全域 --');
 });
 
-// Province変更時にMunicipality一覧を動的取得
+// Province変更時にMunicipality一覧を動的取得（geoBoundaries ADM2）
 provinceSelect.onChange(function(provName) {
   munSelect.items().reset(['-- 全域 --']);
   munSelect.setValue('-- 全域 --');
   if (provName !== '-- 全域 --') {
-    // GAUL Level2からMunicipality一覧を取得はできないので、
-    // 代わりにGEEのadmin level2をそのまま使用（Province = 最小単位）
-    munSelect.items().reset(['-- 全域 --', '(Province全体を使用)']);
+    // Province境界を取得し、その中にあるMunicipalityを検索
+    var provGeom = phProv.filter(ee.Filter.eq('ADM2_NAME', provName)).geometry();
+    var munsInProv = geob2.filterBounds(provGeom);
+    munsInProv.aggregate_array('shapeName').sort().evaluate(function(names) {
+      if (names && names.length > 0) {
+        munSelect.items().reset(['-- 全域 --'].concat(names));
+      }
+    });
   }
 });
 
@@ -231,16 +240,21 @@ function runAnalysis() {
   if (aoiModeVal === '行政区域から選択') {
     var selectedRegion = regionSelect.getValue();
     var selectedProv = provinceSelect.getValue();
+    var selectedMun = munSelect.getValue();
 
-    if (selectedProv !== '-- 全域 --') {
-      // Province単位
-      aoi = phProv.filter(ee.Filter.eq('ADM2_NAME', selectedProv));
+    if (selectedMun !== '-- 全域 --') {
+      // Municipality単位（geoBoundaries ADM2）
+      var provGeom = phProv.filter(ee.Filter.eq('ADM2_NAME', selectedProv)).geometry();
+      aoi = geob2.filterBounds(provGeom)
+        .filter(ee.Filter.eq('shapeName', selectedMun)).geometry();
+    } else if (selectedProv !== '-- 全域 --') {
+      // Province単位（GAUL Level2）
+      aoi = phProv.filter(ee.Filter.eq('ADM2_NAME', selectedProv)).geometry();
     } else {
-      // Region全体（複数Provinceを結合）
+      // Region全体
       var provList = regionProvinces[selectedRegion];
-      aoi = phProv.filter(ee.Filter.inList('ADM2_NAME', provList));
+      aoi = phProv.filter(ee.Filter.inList('ADM2_NAME', provList)).geometry();
     }
-    aoi = aoi.geometry();
   } else {
     // ジオメトリを描画
     var drawingLayers = Map.drawingTools().layers();
