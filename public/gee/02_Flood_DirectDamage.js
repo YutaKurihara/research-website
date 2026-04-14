@@ -189,6 +189,10 @@ var messagePanel = ui.Panel({
 });
 Map.add(messagePanel);
 
+// 凡例パネル（1つだけ作成し、実行ごとに中身を再構築）
+var legendPanel = ui.Panel({style: {position: 'bottom-right', padding: '15px 8px'}});
+Map.add(legendPanel);
+
 // --- 実行ボタン ---
 var applyButton = ui.Button({label: '実行', style: {stretch: 'horizontal', fontWeight: 'bold'}});
 panel.add(applyButton);
@@ -382,6 +386,9 @@ function runAnalysis() {
 // ==================== 被害計算・結果表示 ====================
 function processResults(aoi, flooded, costDepthFilter) {
   Map.layers().reset();
+  messagePanel.clear();
+  legendPanel.clear();
+  resultPanel.clear();
   Map.centerObject(aoi, 12);
   Map.setOptions('SATELLITE');
 
@@ -568,19 +575,17 @@ function processResults(aoi, flooded, costDepthFilter) {
     fileFormat: 'SHP', fileNamePrefix: 'AOI'
   });
 
-  // --- 凡例 ---
-  var legend = ui.Panel({style: {position: 'bottom-right', padding: '15px 8px'}});
-  legend.add(ui.Label('浸水深 (m)', {fontSize: '14px', margin: '0 0 4px 0', padding: '0'}));
+  // --- 凡例（既存パネルを再利用） ---
+  legendPanel.add(ui.Label('浸水深 (m)', {fontSize: '14px', margin: '0 0 4px 0', padding: '0'}));
   var lon = ee.Image.pixelLonLat().select('latitude');
   var gradient = lon.multiply((flood_palette.max - flood_palette.min) / 100.0).add(flood_palette.min);
   var legendImage = gradient.visualize(flood_palette);
-  legend.add(ui.Panel({widgets: [ui.Label(flood_palette.max)]}));
-  legend.add(ui.Thumbnail({
+  legendPanel.add(ui.Panel({widgets: [ui.Label(flood_palette.max)]}));
+  legendPanel.add(ui.Thumbnail({
     image: legendImage, params: {bbox: '0,0,10,100', dimensions: '10x50'},
     style: {padding: '1px', position: 'bottom-center'}
   }));
-  legend.add(ui.Panel({widgets: [ui.Label(flood_palette.min)]}));
-  Map.add(legend);
+  legendPanel.add(ui.Panel({widgets: [ui.Label(flood_palette.min)]}));
 }
 
 applyButton.onClick(runAnalysis);
