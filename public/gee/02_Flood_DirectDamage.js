@@ -14,6 +14,9 @@
 var gaul2 = ee.FeatureCollection('FAO/GAUL/2015/level2');
 var phProv = gaul2.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
 
+// フィリピン市町村境界（Provinceフィールド、NAME_2が市町村名）
+var phMuni = ee.FeatureCollection('users/kurihara-yt/Philippines_MuniCities');
+
 var regionProvinces = {
   'Region I - Ilocos': ['Ilocos Norte','Ilocos Sur','La Union','Pangasinan'],
   'Region II - Cagayan Valley': ['Batanes','Cagayan','Isabela','Nueva Vizcaya','Quirino'],
@@ -133,11 +136,37 @@ var provinceSelect = ui.Select({
 });
 adminPanel.add(provinceSelect);
 
+// Municipality選択（オプション）
+adminPanel.add(ui.Label('Municipality（オプション）:', {margin: '8px 0 4px 0'}));
+var munSelect = ui.Select({
+  items: ['-- 全域 --'],
+  value: '-- 全域 --',
+  style: {stretch: 'horizontal'}
+});
+adminPanel.add(munSelect);
+
 // Region変更時にProvince一覧を更新
 regionSelect.onChange(function(regionName) {
   var provinces = regionProvinces[regionName];
   provinceSelect.items().reset(['-- 全域 --'].concat(provinces));
   provinceSelect.setValue('-- 全域 --');
+  munSelect.items().reset(['-- 全域 --']);
+  munSelect.setValue('-- 全域 --');
+});
+
+// Province変更時にMunicipality一覧を動的取得
+provinceSelect.onChange(function(provName) {
+  munSelect.items().reset(['-- 全域 --']);
+  munSelect.setValue('-- 全域 --');
+  if (provName !== '-- 全域 --') {
+    phMuni.filter(ee.Filter.eq('PROVINCE', provName))
+      .aggregate_array('NAME_2').sort()
+      .evaluate(function(names) {
+        if (names && names.length > 0) {
+          munSelect.items().reset(['-- 全域 --'].concat(names));
+        }
+      });
+  }
 });
 
 // 解析範囲方式の切替
@@ -209,8 +238,15 @@ function runAnalysis() {
   if (aoiModeVal === '行政区域から選択') {
     var selectedRegion = regionSelect.getValue();
     var selectedProv = provinceSelect.getValue();
+    var selectedMun = munSelect.getValue();
 
-    if (selectedProv !== '-- 全域 --') {
+    if (selectedMun !== '-- 全域 --') {
+      // Municipality単位（Philippines_MuniCities）
+      aoi = phMuni.filter(ee.Filter.and(
+        ee.Filter.eq('PROVINCE', selectedProv),
+        ee.Filter.eq('NAME_2', selectedMun)
+      )).geometry();
+    } else if (selectedProv !== '-- 全域 --') {
       // Province単位（GAUL Level2）
       aoi = phProv.filter(ee.Filter.eq('ADM2_NAME', selectedProv)).geometry();
     } else {
