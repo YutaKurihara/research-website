@@ -217,15 +217,37 @@ function runAnalysis() {
     var slope = terrain.select('slope');
     flooded = flooded.updateMask(slope.lt(5));
 
-    // FwDET浸水深推定
-    var floodExtent = flooded.selfMask();
-    var floodDEM = DEM.updateMask(floodExtent);
-    var floodEdge = floodExtent.focal_max(1).neq(floodExtent).selfMask();
-    var edgeDEM = DEM.updateMask(floodEdge);
-    var waterSurface = edgeDEM
-      .reduceNeighborhood(ee.Reducer.max(), ee.Kernel.circle(500, 'meters'))
-      .updateMask(floodExtent);
-    costDepthFilter = waterSurface.subtract(floodDEM).max(0).focal_mean(3, 'square');
+    // FwDET浸水深推定（オリジナルFwDET-GEEコード準拠、cumulativeCost法）
+    var fill = DEM; // HydroSHEDS DEM（傾斜フィルタと同じDEMを使用）
+    var projection = fill.projection();
+    var flood_image = flooded.multiply(0); // 浸水域をマスク値0で表現
+
+    // JRC水域を浸水域に追加
+    var jrc = ee.Image('JRC/GSW1_1/GlobalSurfaceWater').select('occurrence').clip(aoi);
+    var w = jrc.reproject(projection);
+    var waterFill = flood_image.mask().where(w.gt(0), 1);
+    flood_image = waterFill.updateMask(waterFill.eq(1)).multiply(0);
+    flood_image = flood_image.reproject(projection);
+
+    // cumulativeCostによる水面標高の補間（FwDET v2.0のcost allocation法）
+    var mod = fill.updateMask(flood_image.mask().eq(0));
+    var source = mod.mask();
+    var val = 10000;
+    var push = 5000;
+    var cost0 = ee.Image(val).where(source, 0).cumulativeCost(source, push);
+    var cost1 = ee.Image(val).where(source, 1).cumulativeCost(source, push);
+    var cost2 = mod.unmask(val).cumulativeCost(source, push);
+    var costFill = cost2.subtract(cost0).divide(cost1.subtract(cost0));
+    var costSurface = mod.unmask(0).add(costFill);
+
+    // 浸水深の計算とローパスフィルタによる平滑化
+    var boxcar = ee.Kernel.square({radius: 3, units: 'pixels', normalize: true});
+    var costDepth = costSurface.subtract(fill)
+      .rename('FwDET')
+      .convolve(boxcar)
+      .reproject(projection)
+      .updateMask(flood_image.eq(0));
+    costDepthFilter = costDepth.where(costDepth.lt(0), 0);
 
     Map.addLayer(before_filtered, {min:-25, max:0}, 'SAR: 洪水前', 0);
     Map.addLayer(after_filtered, {min:-25, max:0}, 'SAR: 洪水後', 0);
