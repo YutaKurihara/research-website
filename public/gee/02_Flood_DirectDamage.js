@@ -10,6 +10,29 @@
 //   - Hospital, School, NatRoad, MunRoad は必要に応じてAssetを用意
 // ============================================================
 
+// ==================== 行政境界データ ====================
+var gaul2 = ee.FeatureCollection('FAO/GAUL/2015/level2');
+var phProv = gaul2.filter(ee.Filter.eq('ADM0_NAME', 'Philippines'));
+
+var regionProvinces = {
+  'Region I - Ilocos': ['Ilocos Norte','Ilocos Sur','La Union','Pangasinan'],
+  'Region II - Cagayan Valley': ['Batanes','Cagayan','Isabela','Nueva Vizcaya','Quirino'],
+  'Region III - Central Luzon': ['Aurora','Bataan','Bulacan','Nueva Ecija','Pampanga','Tarlac','Zambales'],
+  'Region IV-A - CALABARZON': ['Batangas','Cavite','Laguna','Quezon','Rizal'],
+  'Region V - Bicol': ['Albay','Camarines Norte','Camarines Sur','Catanduanes','Masbate','Sorsogon'],
+  'Region VI - Western Visayas': ['Aklan','Antique','Capiz','Guimaras','Iloilo','Negros Occidental'],
+  'Region VII - Central Visayas': ['Bohol','Cebu','Negros Oriental','Siquijor'],
+  'Region VIII - Eastern Visayas': ['Biliran','Eastern Samar','Leyte','Northern Samar','Samar','Southern Leyte'],
+  'Region IX - Zamboanga': ['Zamboanga Del Norte','Zamboanga Del Sur','Zamboanga Sibugay'],
+  'Region X - Northern Mindanao': ['Bukidnon','Camiguin','Lanao Del Norte','Misamis Occidental','Misamis Oriental'],
+  'Region XI - Davao': ['Compostela','Davao del Norte','Davao Del Sur','Davao Oriental'],
+  'Region XII - SOCCSKSARGEN': ['North Cotabato','Saranggani','South Cotabato','Sultan Kudarat'],
+  'Region XIII - Caraga': ['Agusan Del Norte','Agusan Del Sur','Dinagat','Surigao Del Norte','Surigao Del Sur'],
+  'BARMM': ['Basilan','Lanao Del Sur','Maguindanao','Shariff Kabunsuan','Sulu','Tawi-tawi'],
+  'CAR - Cordillera': ['Abra','Apayao','Benguet','Ifugao','Kalinga','Mountain Province'],
+  'NCR - Metro Manila': ['Metropolitan Manila'],
+};
+
 // ==================== UIパネル ====================
 var panel = ui.Panel({style: {width: '340px', padding: '8px'}});
 ui.root.insert(0, panel);
@@ -80,6 +103,75 @@ inputMode.onChange(function(val) {
   assetPanel.style().set('shown', val === 'Assetから読み込み');
 });
 
+// --- 解析範囲の選択 ---
+panel.add(ui.Label('解析範囲:', {fontWeight: 'bold', margin: '14px 0 4px 0'}));
+var aoiMode = ui.Select({
+  items: ['行政区域から選択', 'ジオメトリを描画'],
+  value: '行政区域から選択',
+  style: {stretch: 'horizontal'}
+});
+panel.add(aoiMode);
+
+var adminPanel = ui.Panel();
+panel.add(adminPanel);
+
+// Region選択
+adminPanel.add(ui.Label('Region:', {fontWeight: 'bold', margin: '8px 0 4px 0'}));
+var regionSelect = ui.Select({
+  items: Object.keys(regionProvinces),
+  value: 'Region II - Cagayan Valley',
+  style: {stretch: 'horizontal'}
+});
+adminPanel.add(regionSelect);
+
+// Province選択（オプション）
+adminPanel.add(ui.Label('Province（オプション）:', {margin: '8px 0 4px 0'}));
+var provinceSelect = ui.Select({
+  items: ['-- 全域 --'].concat(regionProvinces['Region II - Cagayan Valley']),
+  value: '-- 全域 --',
+  style: {stretch: 'horizontal'}
+});
+adminPanel.add(provinceSelect);
+
+// Municipality選択（オプション）
+adminPanel.add(ui.Label('Municipality（オプション）:', {margin: '8px 0 4px 0'}));
+var munSelect = ui.Select({
+  items: ['-- 全域 --'],
+  value: '-- 全域 --',
+  style: {stretch: 'horizontal'}
+});
+adminPanel.add(munSelect);
+
+// Region変更時にProvince一覧を更新
+regionSelect.onChange(function(regionName) {
+  var provinces = regionProvinces[regionName];
+  provinceSelect.items().reset(['-- 全域 --'].concat(provinces));
+  provinceSelect.setValue('-- 全域 --');
+  munSelect.items().reset(['-- 全域 --']);
+  munSelect.setValue('-- 全域 --');
+});
+
+// Province変更時にMunicipality一覧を動的取得
+provinceSelect.onChange(function(provName) {
+  munSelect.items().reset(['-- 全域 --']);
+  munSelect.setValue('-- 全域 --');
+  if (provName !== '-- 全域 --') {
+    // GAUL Level2からMunicipality一覧を取得はできないので、
+    // 代わりにGEEのadmin level2をそのまま使用（Province = 最小単位）
+    munSelect.items().reset(['-- 全域 --', '(Province全体を使用)']);
+  }
+});
+
+// 解析範囲方式の切替
+var geomNote = ui.Label('地図上にジオメトリを描画してください', {fontSize: '10px', color: 'gray'});
+geomNote.style().set('shown', false);
+panel.add(geomNote);
+
+aoiMode.onChange(function(val) {
+  adminPanel.style().set('shown', val === '行政区域から選択');
+  geomNote.style().set('shown', val === 'ジオメトリを描画');
+});
+
 // --- 結果表示・チャートエリア ---
 var resultPanel = ui.Panel({style: {margin: '12px 0 0 0'}});
 panel.add(resultPanel);
@@ -132,15 +224,33 @@ function runAnalysis() {
   messagePanel.clear();
   resultPanel.add(ui.Label('処理中...', {color: 'blue'}));
 
-  // 解析範囲（ジオメトリ必須）
-  var drawingLayers = Map.drawingTools().layers();
+  // 解析範囲の決定
   var aoi;
-  if (drawingLayers.length() > 0 && drawingLayers.get(0).geometries().length() > 0) {
-    aoi = drawingLayers.get(0).toGeometry();
+  var aoiModeVal = aoiMode.getValue();
+
+  if (aoiModeVal === '行政区域から選択') {
+    var selectedRegion = regionSelect.getValue();
+    var selectedProv = provinceSelect.getValue();
+
+    if (selectedProv !== '-- 全域 --') {
+      // Province単位
+      aoi = phProv.filter(ee.Filter.eq('ADM2_NAME', selectedProv));
+    } else {
+      // Region全体（複数Provinceを結合）
+      var provList = regionProvinces[selectedRegion];
+      aoi = phProv.filter(ee.Filter.inList('ADM2_NAME', provList));
+    }
+    aoi = aoi.geometry();
   } else {
-    resultPanel.clear();
-    resultPanel.add(ui.Label('エラー: 地図上に解析範囲を描画してください', {color: 'red'}));
-    return;
+    // ジオメトリを描画
+    var drawingLayers = Map.drawingTools().layers();
+    if (drawingLayers.length() > 0 && drawingLayers.get(0).geometries().length() > 0) {
+      aoi = drawingLayers.get(0).toGeometry();
+    } else {
+      resultPanel.clear();
+      resultPanel.add(ui.Label('エラー: 地図上に解析範囲を描画してください', {color: 'red'}));
+      return;
+    }
   }
 
   var flooded, costDepthFilter;
