@@ -336,7 +336,8 @@ function runAnalysis() {
     var connections = flooded.connectedPixelCount();
     flooded = flooded.updateMask(connections.gte(8));
 
-    var DEM = ee.Image('WWF/HydroSHEDS/03VFDEM');
+    // Copernicus DEM GLO-30（30m解像度）
+    var DEM = ee.ImageCollection('COPERNICUS/DEM/GLO30').select('DEM').mosaic().setDefaultProjection('EPSG:4326', null, 30);
     var terrain = ee.Algorithms.Terrain(DEM);
     var slope = terrain.select('slope');
     flooded = flooded.updateMask(slope.lt(5));
