@@ -40,11 +40,14 @@ export const metadata: Metadata = {
       "Flood risk assessment, probabilistic forecasting, remote sensing research.",
   },
   robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: siteUrl,
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
   },
 };
 
