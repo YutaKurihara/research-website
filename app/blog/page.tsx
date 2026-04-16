@@ -5,6 +5,20 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "s2s-disaster-preparedness",
+    title: "S2S予測の防災活用 — サブシーズナル予測はどこまで意思決定に使えるか",
+    date: "2025-04-16",
+    description:
+      "S2Sプロジェクトのマルチモデルデータベースを核に、Forecast-based FinancingやAnticipatory Actionなど防災分野での確率的予測の活用事例を体系的にレビュー。BAMS掲載。",
+  },
+  {
+    slug: "extreme-precipitation-climate-change",
+    title: "気候変動と極端降水の増大 — 水資源量が多い地域ほどリスクが高まる",
+    date: "2025-04-16",
+    description:
+      "CMIP5全球解析から、年間降水量が多い湿潤地域ほど極端降水と洪水流量の気候変動による増加率が大きいことを定量的に示した研究。Scientific Reports掲載。",
+  },
+  {
     slug: "global-flood-mapping-sar",
     title: "10年分のSARデータで世界の洪水を地図化する — 深層学習による全球洪水データセット",
     date: "2025-04-13",
