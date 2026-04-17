@@ -5,6 +5,20 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "compound-flooding",
+    title: "複合災害としての洪水 — 複数ハザードの同時発生リスクをどう評価するか",
+    date: "2026-04-17",
+    description:
+      "高潮+河川洪水、連続台風、土壌飽和+豪雨など複合イベントの4類型を定義し、Copulaや大規模アンサンブルによる評価手法と気候変動下でのリスク変化を体系的にレビュー。Nature Reviews掲載。",
+  },
+  {
+    slug: "deep-learning-flood-mapping",
+    title: "深層学習による洪水マッピング手法の体系的レビュー",
+    date: "2026-04-17",
+    description:
+      "感受性マッピング・急速浸水モデリング・衛星画像抽出の3フェーズにわたる187本のDL論文を分析。U-Netの標準化、ベンチマーク不在、汎化性能未検証など構造的課題を指摘。HESS掲載。",
+  },
+  {
     slug: "s2s-disaster-preparedness",
     title: "S2S予測の防災活用 — サブシーズナル予測はどこまで意思決定に使えるか",
     date: "2025-04-16",
