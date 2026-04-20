@@ -5,6 +5,13 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "sar-hydraulic-model-integration",
+    title: "SAR衛星×水理モデル — リモートセンシングで洪水予測を高精度化するアプローチの体系的整理",
+    date: "2025-04-20",
+    description:
+      "SAR画像から抽出した浸水範囲・水位を水理モデルのキャリブレーション・データ同化に活用する手法を体系的にレビュー。GEEで実行可能な処理とLISFLOOD-FP等の外部モデルとの統合ワークフローも整理。",
+  },
+  {
     slug: "compound-flooding",
     title: "複合災害としての洪水 — 複数ハザードの同時発生リスクをどう評価するか",
     date: "2026-04-17",
