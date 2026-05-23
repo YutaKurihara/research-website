@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { BlogList, type BlogPost } from "@/components/BlogList";
 
 export const metadata: Metadata = { title: "Blog" };
 
-const posts = [
+const posts: BlogPost[] = [
   {
     slug: "sar-flood-assimilation",
     title: "SAR浸水マップの準リアルタイム同化による洪水予測の改善",
     date: "2026-05-23",
     description:
       "SAR浸水確率マップをパーティクルフィルタで水文・水理モデルに逐次同化するフレームワーク。セヴァーン川4イベントで予測誤差を最大50%削減、改善は24〜48時間持続。局所重みの数式と同化ワークフローを詳解。WRR掲載。",
+    keywords: ["SAR", "データ同化", "水理モデル", "パーティクルフィルタ", "洪水予測"],
   },
   {
     slug: "culvert-blockage-flood-modeling",
@@ -17,6 +18,7 @@ const posts = [
     date: "2026-05-23",
     description:
       "TELEMAC-2Dにカルバート閉塞の動的モジュールを実装し、閉塞率・トリガー水位・再現期間の組合せシナリオで局所浸水への影響を定量評価。重要カルバートの特定手法と緩和策の効果を検証。NHESS掲載。",
+    keywords: ["水理モデル", "都市洪水", "インフラ", "シナリオ分析", "防災"],
   },
   {
     slug: "flexth-flood-depth-estimation",
@@ -24,6 +26,7 @@ const posts = [
     date: "2026-05-23",
     description:
       "衛星SAR浸水マップとDTMから浸水深を推定し、都市部・植生下の欠測域に浸水を伝播させるFLEXTHフレームワーク。2022年パキスタン洪水（243万km²）を1.5時間で処理。FwDETより高精度・高速。NHESS掲載。",
+    keywords: ["SAR", "浸水深推定", "DEM", "リモートセンシング", "被害評価"],
   },
   {
     slug: "sar-hydraulic-model-integration",
@@ -31,6 +34,7 @@ const posts = [
     date: "2026-04-20",
     description:
       "SAR画像から抽出した浸水範囲・水位を水理モデルのキャリブレーション・データ同化に活用する手法を体系的にレビュー。GEEで実行可能な処理とLISFLOOD-FP等の外部モデルとの統合ワークフローも整理。",
+    keywords: ["SAR", "水理モデル", "データ同化", "Google Earth Engine", "レビュー"],
   },
   {
     slug: "compound-flooding",
@@ -38,6 +42,7 @@ const posts = [
     date: "2026-04-17",
     description:
       "高潮+河川洪水、連続台風、土壌飽和+豪雨など複合イベントの4類型を定義し、Copulaや大規模アンサンブルによる評価手法と気候変動下でのリスク変化を体系的にレビュー。Nature Reviews掲載。",
+    keywords: ["複合災害", "気候変動", "統計解析", "リスク評価", "レビュー"],
   },
   {
     slug: "deep-learning-flood-mapping",
@@ -45,6 +50,7 @@ const posts = [
     date: "2026-04-17",
     description:
       "感受性マッピング・急速浸水モデリング・衛星画像抽出の3フェーズにわたる187本のDL論文を分析。U-Netの標準化、ベンチマーク不在、汎化性能未検証など構造的課題を指摘。HESS掲載。",
+    keywords: ["深層学習", "リモートセンシング", "浸水マッピング", "U-Net", "レビュー"],
   },
   {
     slug: "s2s-disaster-preparedness",
@@ -52,6 +58,7 @@ const posts = [
     date: "2026-04-16",
     description:
       "S2Sプロジェクトのマルチモデルデータベースを核に、Forecast-based FinancingやAnticipatory Actionなど防災分野での確率的予測の活用事例を体系的にレビュー。BAMS掲載。",
+    keywords: ["洪水予測", "防災", "早期警報", "気候変動", "レビュー"],
   },
   {
     slug: "extreme-precipitation-climate-change",
@@ -59,6 +66,7 @@ const posts = [
     date: "2026-04-16",
     description:
       "CMIP5全球解析から、年間降水量が多い湿潤地域ほど極端降水と洪水流量の気候変動による増加率が大きいことを定量的に示した研究。Scientific Reports掲載。",
+    keywords: ["気候変動", "極端降水", "CMIP", "洪水予測", "統計解析"],
   },
   {
     slug: "global-flood-mapping-sar",
@@ -66,6 +74,7 @@ const posts = [
     date: "2026-04-13",
     description:
       "Microsoft AI for Good Labが10年分のSentinel-1 SARアーカイブに深層学習を適用し、既存データセットより71%多い洪水域を検出した全球洪水データセットを構築。Nature Communications掲載。",
+    keywords: ["SAR", "深層学習", "浸水マッピング", "Sentinel-1", "グローバル"],
   },
   {
     slug: "flood-risk-central-asia",
@@ -73,6 +82,7 @@ const posts = [
     date: "2026-04-12",
     description:
       "中央アジア5カ国を対象とした初の広域確率論的洪水リスク評価。グローバルデータとローカルデータの統合、10,000年合成洪水カタログ、気候変動影響の地域差を解説。",
+    keywords: ["リスク評価", "気候変動", "統計解析", "途上国", "水理モデル"],
   },
   {
     slug: "sar-flood-mapping",
@@ -80,6 +90,7 @@ const posts = [
     date: "2026-04-12",
     description:
       "Sentinel-1 SAR画像とNDFI（正規化差分洪水指数）を用いた洪水範囲の自動検出手法を、Cian et al. (2018) の論文をもとに解説。",
+    keywords: ["SAR", "Sentinel-1", "浸水マッピング", "リモートセンシング", "NDFI"],
   },
   {
     slug: "fwdet",
@@ -87,6 +98,7 @@ const posts = [
     date: "2026-04-12",
     description:
       "浸水範囲マップとDEMから浸水深を推定するFwDET（Floodwater Depth Estimation Tool）のアルゴリズム・検証結果・限界を、原著論文をもとに整理。",
+    keywords: ["浸水深推定", "DEM", "Google Earth Engine", "リモートセンシング", "被害評価"],
   },
   {
     slug: "flood-direct-damage",
@@ -94,6 +106,7 @@ const posts = [
     date: "2026-02-01",
     description:
       "Google Earth EngineとSentinel-1 SAR衛星画像を用いて、台風Ulyssesによるフィリピン・カガヤン川流域の洪水被害を迅速に評価した研究の詳細解説。",
+    keywords: ["SAR", "被害評価", "Google Earth Engine", "Sentinel-1", "途上国"],
   },
 ];
 
@@ -104,22 +117,7 @@ export default function BlogPage() {
         <h1 className="text-4xl font-light tracking-tight">Blog</h1>
       </section>
 
-      <hr className="border-border" />
-
-      {posts.map((post) => (
-        <section key={post.slug} className="py-8">
-          <Link href={`/blog/${post.slug}`} className="group block">
-            <span className="text-[10px] uppercase tracking-widest text-muted">
-              {post.date}
-            </span>
-            <p className="mt-1 text-sm font-medium leading-snug transition-colors group-hover:text-highlight">
-              {post.title}
-            </p>
-            <p className="mt-2 text-xs text-muted">{post.description}</p>
-          </Link>
-          <hr className="mt-8 border-border" />
-        </section>
-      ))}
+      <BlogList posts={posts} />
     </div>
   );
 }
