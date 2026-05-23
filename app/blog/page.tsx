@@ -5,6 +5,13 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "sar-flood-assimilation",
+    title: "SAR浸水マップの準リアルタイム同化による洪水予測の改善",
+    date: "2026-05-23",
+    description:
+      "SAR浸水確率マップをパーティクルフィルタで水文・水理モデルに逐次同化するフレームワーク。セヴァーン川4イベントで予測誤差を最大50%削減、改善は24〜48時間持続。局所重みの数式と同化ワークフローを詳解。WRR掲載。",
+  },
+  {
     slug: "culvert-blockage-flood-modeling",
     title: "カルバート閉塞が洪水動態に与える影響 — 2D水理モデルによる定量評価とインフラ優先度の特定",
     date: "2026-05-23",
