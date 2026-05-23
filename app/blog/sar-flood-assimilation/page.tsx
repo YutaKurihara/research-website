@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MathBlock, Math } from "@/components/Math";
 
 export const metadata: Metadata = {
   title: "SAR浸水マップの準リアルタイム同化による洪水予測の改善",
@@ -130,34 +131,19 @@ export default function SarFloodAssimilationPost() {
           </h2>
           <p className="mb-3 text-muted">
             従来のSAR洪水マッピングでは閾値処理で浸水/非浸水の<strong className="text-foreground">二値マップ</strong>を
-            生成しますが、本研究では各ピクセルに<strong className="text-foreground">浸水確率 p<sub>i</sub></strong>を
+            生成しますが、本研究では各ピクセルに<strong className="text-foreground">浸水確率 <Math tex="p_i" /></strong>を
             割り当てます。
           </p>
           <p className="mb-3 text-muted">
             SAR後方散乱値のヒストグラムを、浸水ピクセルと非浸水ピクセルの
             2つの分布（通常はガウス分布）の混合としてモデル化します。
-            ベイズの定理により、観測された後方散乱値σ<sup>0</sup>が与えられたときの
+            ベイズの定理により、観測された後方散乱値 <Math tex="\sigma^0" /> が与えられたときの
             浸水確率は次のように計算されます：
           </p>
-          <div className="rounded border border-border bg-accent-light/30 px-5 py-4">
-            <div className="flex items-center justify-center gap-3 text-sm text-foreground">
-              <span>p<sub>i</sub></span>
-              <span>=</span>
-              <span>P(flooded | σ<sup>0</sup><sub>i</sub>)</span>
-              <span>=</span>
-              <div className="inline-flex flex-col items-center">
-                <span className="border-b border-foreground px-2 pb-1">
-                  π<sub>f</sub> · f(σ<sup>0</sup><sub>i</sub> | flooded)
-                </span>
-                <span className="px-2 pt-1">
-                  π<sub>f</sub> · f(σ<sup>0</sup><sub>i</sub> | flooded) + π<sub>nf</sub> · f(σ<sup>0</sup><sub>i</sub> | not flooded)
-                </span>
-              </div>
-            </div>
-          </div>
+          <MathBlock tex="p_i = P(\text{flooded} \mid \sigma^0_i) = \frac{\pi_f \cdot f(\sigma^0_i \mid \text{flooded})}{\pi_f \cdot f(\sigma^0_i \mid \text{flooded}) + \pi_{nf} \cdot f(\sigma^0_i \mid \text{not flooded})}" />
           <p className="mt-3 text-muted">
-            ここで、π<sub>f</sub>とπ<sub>nf</sub>は浸水/非浸水の事前確率、
-            f(·)は各クラスの条件付き確率密度関数です。
+            ここで、<Math tex="\pi_f" /> と <Math tex="\pi_{nf}" /> は浸水/非浸水の事前確率、
+            <Math tex="f(\cdot)" /> は各クラスの条件付き確率密度関数です。
             この確率的アプローチにより、<strong className="text-foreground">SAR観測の不確実性を
             データ同化に明示的に組み込む</strong>ことが可能になります。
           </p>
@@ -175,20 +161,16 @@ export default function SarFloodAssimilationPost() {
             N個の<strong className="text-foreground">パーティクル</strong>（異なるパラメータセットを持つ
             モデル実行）を並列に実行します。
             各パーティクルnはSUPERFLEX + LISFLOOD-FPを通じて独自の浸水予測マップを生成。
-            SAR画像取得時に、予測と観測の一致度に基づいて各パーティクルの<strong className="text-foreground">重み W<sub>n</sub></strong>を
+            SAR画像取得時に、予測と観測の一致度に基づいて各パーティクルの<strong className="text-foreground">重み <Math tex="W_n" /></strong>を
             更新します。
           </p>
 
           <h3 className="mb-2 font-medium text-foreground">ピクセル単位の局所重み</h3>
           <p className="mb-3 text-muted">
-            パーティクルnのピクセルiにおける予測と観測の一致度は、
-            <strong className="text-foreground">局所重み w<sub>i,n</sub></strong>として定義されます：
+            パーティクル <Math tex="n" /> のピクセル <Math tex="i" /> における予測と観測の一致度は、
+            <strong className="text-foreground">局所重み <Math tex="w_{i,n}" /></strong> として定義されます：
           </p>
-          <div className="rounded border border-border bg-accent-light/30 px-4 py-3 text-center">
-            <p className="text-sm font-medium text-foreground">
-              w<sub>i,n</sub> = p<sub>i</sub> · M<sub>i,n</sub> + (1 − p<sub>i</sub>)(1 − M<sub>i,n</sub>)
-            </p>
-          </div>
+          <MathBlock tex="w_{i,n} = p_i \cdot M_{i,n} + (1 - p_i)(1 - M_{i,n})" />
           <div className="mt-3 overflow-x-auto">
             <table className="w-full border-collapse text-xs">
               <thead>
@@ -199,15 +181,15 @@ export default function SarFloodAssimilationPost() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="border border-border px-3 py-2 font-medium text-foreground">p<sub>i</sub></td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground"><Math tex="p_i" /></td>
                   <td className="border border-border px-3 py-2 text-muted">SAR画像から導出されたピクセルiの浸水確率（0〜1の連続値）</td>
                 </tr>
                 <tr className="bg-accent-light/50">
-                  <td className="border border-border px-3 py-2 font-medium text-foreground">M<sub>i,n</sub></td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground"><Math tex="M_{i,n}" /></td>
                   <td className="border border-border px-3 py-2 text-muted">パーティクルnによるピクセルiの浸水予測（1=浸水、0=非浸水）</td>
                 </tr>
                 <tr>
-                  <td className="border border-border px-3 py-2 font-medium text-foreground">w<sub>i,n</sub></td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground"><Math tex="w_{i,n}" /></td>
                   <td className="border border-border px-3 py-2 text-muted">ピクセルiにおけるパーティクルnの局所重み（尤度）</td>
                 </tr>
               </tbody>
@@ -219,40 +201,32 @@ export default function SarFloodAssimilationPost() {
           </p>
           <ul className="mt-2 ml-4 list-disc space-y-2 text-muted">
             <li>
-              SARが「浸水」と言い（p<sub>i</sub> ≈ 1）、モデルも「浸水」と予測（M = 1）
-              → w ≈ <strong className="text-foreground">1</strong>（高い一致）
+              SARが「浸水」と言い（<Math tex="p_i \approx 1" />）、モデルも「浸水」と予測（<Math tex="M = 1" />）
+              → <Math tex="w \approx 1" />（高い一致）
             </li>
             <li>
-              SARが「浸水」と言い（p<sub>i</sub> ≈ 1）、モデルは「非浸水」と予測（M = 0）
-              → w ≈ <strong className="text-foreground">0</strong>（不一致）
+              SARが「浸水」と言い（<Math tex="p_i \approx 1" />）、モデルは「非浸水」と予測（<Math tex="M = 0" />）
+              → <Math tex="w \approx 0" />（不一致）
             </li>
             <li>
-              SARが「非浸水」と言い（p<sub>i</sub> ≈ 0）、モデルも「非浸水」と予測（M = 0）
-              → w ≈ <strong className="text-foreground">1</strong>（高い一致）
+              SARが「非浸水」と言い（<Math tex="p_i \approx 0" />）、モデルも「非浸水」と予測（<Math tex="M = 0" />）
+              → <Math tex="w \approx 1" />（高い一致）
             </li>
             <li>
-              SARが不確実（p<sub>i</sub> ≈ 0.5）
-              → w ≈ <strong className="text-foreground">0.5</strong>（情報量が低い）
+              SARが不確実（<Math tex="p_i \approx 0.5" />）
+              → <Math tex="w \approx 0.5" />（情報量が低い）
             </li>
           </ul>
 
           <h3 className="mt-6 mb-2 font-medium text-foreground">グローバル重み（パーティクルの尤度）</h3>
           <p className="mb-3 text-muted">
-            全ピクセルの局所重みの積として、パーティクルnのグローバル重みが計算されます：
+            全ピクセルの局所重みの積として、パーティクル <Math tex="n" /> のグローバル重みが計算されます：
           </p>
-          <div className="rounded border border-border bg-accent-light/30 px-4 py-3 text-center">
-            <p className="text-sm font-medium text-foreground">
-              W<sub>n</sub> = ∏<sub>i</sub> w<sub>i,n</sub>
-            </p>
-          </div>
+          <MathBlock tex="W_n = \prod_{i} w_{i,n}" />
           <p className="mt-3 text-muted">
             実装上はアンダーフローを避けるため対数空間で計算します：
           </p>
-          <div className="rounded border border-border bg-accent-light/30 px-4 py-3 text-center">
-            <p className="text-sm font-medium text-foreground">
-              log W<sub>n</sub> = Σ<sub>i</sub> log w<sub>i,n</sub>
-            </p>
-          </div>
+          <MathBlock tex="\log W_n = \sum_{i} \log w_{i,n}" />
           <p className="mt-3 text-muted">
             グローバル重みが大きいパーティクル（SARの観測と整合するモデル実行）が
             高い確率で次のステップに残され、重みが小さいパーティクルは淘汰されます。
@@ -372,12 +346,12 @@ export default function SarFloodAssimilationPost() {
             </li>
             <li>
               <strong className="text-foreground">パーティクルの退化を軽減</strong>:
-              二値マップでは不一致ピクセルのw=0がグローバル重みを即座にゼロにするが、
+              二値マップでは不一致ピクセルの <Math tex="w=0" /> がグローバル重みを即座にゼロにするが、
               確率マップでは連続値により極端な淘汰を回避
             </li>
             <li>
               <strong className="text-foreground">非浸水域の情報も活用</strong>:
-              p<sub>i</sub> ≈ 0の領域でもM=0のパーティクルに高い重みが付き、
+              <Math tex="p_i \approx 0" /> の領域でも <Math tex="M=0" /> のパーティクルに高い重みが付き、
               浸水範囲の過大予測を制約する
             </li>
           </ul>
@@ -392,19 +366,19 @@ export default function SarFloodAssimilationPost() {
           <ol className="ml-4 list-decimal space-y-3 text-muted">
             <li>
               <strong className="text-foreground">初期化</strong>:
-              N個のパーティクルをパラメータ空間からサンプリングし、等しい重み（1/N）を割り当て
+              N個のパーティクルをパラメータ空間からサンプリングし、等しい重み（<Math tex="1/N" />）を割り当て
             </li>
             <li>
               <strong className="text-foreground">予測</strong>:
-              各パーティクルでSUPERFLEX→LISFLOOD-FPを実行し、浸水予測マップM<sub>i,n</sub>を生成
+              各パーティクルでSUPERFLEX→LISFLOOD-FPを実行し、浸水予測マップ <Math tex="M_{i,n}" /> を生成
             </li>
             <li>
               <strong className="text-foreground">SAR取得</strong>:
-              衛星通過時にSAR画像を取得し、後方散乱ヒストグラムから浸水確率マップp<sub>i</sub>を導出
+              衛星通過時にSAR画像を取得し、後方散乱ヒストグラムから浸水確率マップ <Math tex="p_i" /> を導出
             </li>
             <li>
               <strong className="text-foreground">重み更新</strong>:
-              全ピクセルの局所重みw<sub>i,n</sub>を計算し、積（ΠまたはΣ log）でグローバル重みW<sub>n</sub>を算出
+              全ピクセルの局所重み <Math tex="w_{i,n}" /> を計算し、積でグローバル重み <Math tex="W_n" /> を算出
             </li>
             <li>
               <strong className="text-foreground">リサンプリング</strong>:
