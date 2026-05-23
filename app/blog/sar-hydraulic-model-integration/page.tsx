@@ -18,7 +18,7 @@ export default function SarHydraulicModelIntegrationPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-04-20
+            2026-04-20
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             SAR衛星×水理モデル — リモートセンシングで洪水予測を高精度化するアプローチの体系的整理

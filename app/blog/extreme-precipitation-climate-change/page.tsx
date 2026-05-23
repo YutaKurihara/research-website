@@ -18,7 +18,7 @@ export default function ExtremePrecipitationClimateChangePost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-04-16
+            2026-04-16
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             気候変動と極端降水の増大 — 水資源量が多い地域ほどリスクが高まる

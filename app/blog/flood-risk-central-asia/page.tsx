@@ -18,7 +18,7 @@ export default function CentralAsiaFloodRiskPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-04-12
+            2026-04-12
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             中央アジアにおける大規模洪水リスク評価 — データ不足地域への適用

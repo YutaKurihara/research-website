@@ -18,7 +18,7 @@ export default function GlobalFloodMappingSarPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-04-13
+            2026-04-13
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             10年分のSARデータで世界の洪水を地図化する — 深層学習による全球洪水データセット

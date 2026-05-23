@@ -18,7 +18,7 @@ export default function S2SDisasterPreparednessPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-04-16
+            2026-04-16
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             S2S予測の防災活用 — サブシーズナル予測はどこまで意思決定に使えるか

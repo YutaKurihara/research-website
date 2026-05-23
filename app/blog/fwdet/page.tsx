@@ -22,7 +22,7 @@ export default function FwDETBlogPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-04-12
+            2026-04-12
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             FwDET — 衛星画像から浸水深を推定するツールの解説

@@ -19,7 +19,7 @@ export default function FloodDamageBlogPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2025-02-01
+            2026-02-01
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             衛星画像を用いた洪水直接被害評価手法の解説
