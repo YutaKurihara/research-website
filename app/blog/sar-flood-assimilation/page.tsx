@@ -139,12 +139,21 @@ export default function SarFloodAssimilationPost() {
             ベイズの定理により、観測された後方散乱値σ<sup>0</sup>が与えられたときの
             浸水確率は次のように計算されます：
           </p>
-          <div className="rounded border border-border bg-accent-light/30 px-4 py-3 text-center">
-            <p className="text-sm text-foreground">
-              p<sub>i</sub> = P(flooded | σ<sup>0</sup><sub>i</sub>) =
-              π<sub>f</sub> · f(σ<sup>0</sup><sub>i</sub> | flooded) /
-              [π<sub>f</sub> · f(σ<sup>0</sup><sub>i</sub> | flooded) + π<sub>nf</sub> · f(σ<sup>0</sup><sub>i</sub> | not flooded)]
-            </p>
+          <div className="rounded border border-border bg-accent-light/30 px-5 py-4">
+            <div className="flex items-center justify-center gap-3 text-sm text-foreground">
+              <span>p<sub>i</sub></span>
+              <span>=</span>
+              <span>P(flooded | σ<sup>0</sup><sub>i</sub>)</span>
+              <span>=</span>
+              <div className="inline-flex flex-col items-center">
+                <span className="border-b border-foreground px-2 pb-1">
+                  π<sub>f</sub> · f(σ<sup>0</sup><sub>i</sub> | flooded)
+                </span>
+                <span className="px-2 pt-1">
+                  π<sub>f</sub> · f(σ<sup>0</sup><sub>i</sub> | flooded) + π<sub>nf</sub> · f(σ<sup>0</sup><sub>i</sub> | not flooded)
+                </span>
+              </div>
+            </div>
           </div>
           <p className="mt-3 text-muted">
             ここで、π<sub>f</sub>とπ<sub>nf</sub>は浸水/非浸水の事前確率、
