@@ -27,12 +27,12 @@ export const publications: Publication[] = [
   {
     id: "bayesian-climate-change",
     title:
-      "Quantifying Uncertainty in Future Climate Change Impacts in the Cagayan River Basin Using a Bayesian Approach",
+      "Quantifying Uncertainty in Climate Change Impacts: A Bayesian Approach for the Cagayan River Basin",
     authors: "Kurihara, Y. et al.",
-    venue: "SSRN (Preprint)",
+    venue: "International Journal of Disaster Risk Reduction",
     year: 2026,
-    type: "preprint",
-    doi: "10.2139/ssrn.6312935",
+    type: "journal",
+    doi: "10.1016/j.ijdrr.2026.106178",
     abstract:
       "カガヤン川流域における将来の気候変動影響の不確実性を、ベイズアプローチを用いて定量化した研究。気候モデルの不確実性を確率的に評価し、洪水リスクへの影響を分析する。",
     keywords: [

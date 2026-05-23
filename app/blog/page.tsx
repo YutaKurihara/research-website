@@ -5,6 +5,20 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts = [
   {
+    slug: "culvert-blockage-flood-modeling",
+    title: "カルバート閉塞が洪水動態に与える影響 — 2D水理モデルによる定量評価とインフラ優先度の特定",
+    date: "2026-05-23",
+    description:
+      "TELEMAC-2Dにカルバート閉塞の動的モジュールを実装し、閉塞率・トリガー水位・再現期間の組合せシナリオで局所浸水への影響を定量評価。重要カルバートの特定手法と緩和策の効果を検証。NHESS掲載。",
+  },
+  {
+    slug: "flexth-flood-depth-estimation",
+    title: "FLEXTH — 衛星浸水マップから浸水深を推定し、欠測域を補完するフレームワーク",
+    date: "2026-05-23",
+    description:
+      "衛星SAR浸水マップとDTMから浸水深を推定し、都市部・植生下の欠測域に浸水を伝播させるFLEXTHフレームワーク。2022年パキスタン洪水（243万km²）を1.5時間で処理。FwDETより高精度・高速。NHESS掲載。",
+  },
+  {
     slug: "sar-hydraulic-model-integration",
     title: "SAR衛星×水理モデル — リモートセンシングで洪水予測を高精度化するアプローチの体系的整理",
     date: "2025-04-20",
