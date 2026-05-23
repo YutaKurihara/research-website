@@ -18,7 +18,7 @@ export default function DeepLearningFloodMappingPost() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2026-04-17
+            2025-04-17
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             深層学習による洪水マッピング手法の体系的レビュー
