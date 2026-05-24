@@ -5,6 +5,14 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "gpu-urban-flood-modeling",
+    title: "マルチGPUで都市洪水をリアルタイム予測 — ベルリン全域891km²を2m解像度で5.5時間",
+    date: "2026-05-24",
+    description:
+      "RIM2Dの局所慣性近似SWEをマルチGPU並列化し、ベルリン全域891km²を2m解像度でリアルタイム以上の速度で計算。8GPU構成で5m解像度なら実時間の100倍速。連続方程式・運動方程式のLaTeX数式と性能ベンチマークを詳解。NHESS掲載。",
+    keywords: ["水理モデル", "GPU", "都市洪水", "早期警報", "浅水方程式"],
+  },
+  {
     slug: "sar-flood-assimilation",
     title: "SAR浸水マップの準リアルタイム同化による洪水予測の改善",
     date: "2026-05-23",
