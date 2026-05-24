@@ -5,6 +5,14 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "hydraulic-model-equations",
+    title: "水理モデルの支配方程式を比較する — 完全SWE・局所慣性・拡散波の違い",
+    date: "2026-05-24",
+    description:
+      "LISFLOOD-FP、HEC-RAS、TELEMAC-2D、RRI、RIM2D — 洪水シミュレーションの代表モデルが採用する浅水方程式の近似レベル（完全SWE・局所慣性・拡散波）を、運動方程式の各項の物理的意味とともに数式で比較・解説。",
+    keywords: ["水理モデル", "浅水方程式", "数値解析", "洪水予測", "GPU"],
+  },
+  {
     slug: "gpu-urban-flood-modeling",
     title: "マルチGPUで都市洪水をリアルタイム予測 — ベルリン全域891km²を2m解像度で5.5時間",
     date: "2026-05-24",
