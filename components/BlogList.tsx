@@ -27,9 +27,9 @@ export function BlogList({ posts }: { posts: BlogPost[] }) {
     : posts;
 
   return (
-    <div className="flex gap-8">
-      {/* 記事リスト（左） */}
-      <div className="min-w-0 flex-1">
+    <div className="relative flex justify-center gap-10">
+      {/* 記事リスト（中央・元の幅を維持） */}
+      <div className="w-full max-w-2xl">
         <hr className="border-border" />
         {filtered.map((post) => (
           <section key={post.slug} className="py-8">
@@ -63,19 +63,19 @@ export function BlogList({ posts }: { posts: BlogPost[] }) {
       </div>
 
       {/* キーワードパネル（右・固定） */}
-      <aside className="hidden shrink-0 md:block md:w-44">
+      <aside className="hidden shrink-0 lg:block lg:w-40">
         <div className="sticky top-20">
           <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
             Keywords
           </p>
           <div className="max-h-[calc(100vh-8rem)] overflow-y-auto pr-1">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <button
                 onClick={() => setSelected(null)}
-                className={`rounded border px-2.5 py-1 text-left text-[11px] transition-colors ${
+                className={`rounded px-2 py-1 text-left text-[11px] transition-colors ${
                   selected === null
-                    ? "border-highlight bg-highlight/10 text-highlight"
-                    : "border-transparent text-muted hover:text-foreground"
+                    ? "bg-highlight/10 font-medium text-highlight"
+                    : "text-muted hover:text-foreground"
                 }`}
               >
                 All ({posts.length})
@@ -84,13 +84,16 @@ export function BlogList({ posts }: { posts: BlogPost[] }) {
                 <button
                   key={kw}
                   onClick={() => setSelected(selected === kw ? null : kw)}
-                  className={`rounded border px-2.5 py-1 text-left text-[11px] transition-colors ${
+                  className={`rounded px-2 py-1 text-left text-[11px] transition-colors ${
                     selected === kw
-                      ? "border-highlight bg-highlight/10 text-highlight"
-                      : "border-transparent text-muted hover:text-foreground"
+                      ? "bg-highlight/10 font-medium text-highlight"
+                      : "text-muted hover:text-foreground"
                   }`}
                 >
-                  {kw} ({keywordCounts.get(kw)})
+                  {kw}
+                  <span className="ml-1 text-[10px] opacity-50">
+                    {keywordCounts.get(kw)}
+                  </span>
                 </button>
               ))}
             </div>
