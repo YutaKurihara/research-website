@@ -5,6 +5,14 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "myproject-tools",
+    title: "MyProject — 途上国の防災・減災を支援するオープンツール集",
+    date: "2026-05-27",
+    description:
+      "SAR衛星画像による災害範囲可視化（SAR-DAT）、洪水直接被害計算、GCMダウンスケーリング、マクロ経済影響評価（DSGE）— 途上国での防災プロジェクトから生まれたオープンツール群の紹介。",
+    keywords: ["SAR", "被害評価", "気候変動", "Google Earth Engine", "途上国"],
+  },
+  {
     slug: "solving-shallow-water-equations",
     title: "浅水方程式の解き方 — 各項の離散化手法と代表的な解法の比較",
     date: "2026-05-27",

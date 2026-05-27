@@ -7,13 +7,9 @@ const navItems = [
   { href: "/", label: "Home" },
   { href: "/publications", label: "Publications" },
   { href: "/blog", label: "Blog" },
-  { href: "https://yutakurihara.github.io/MyProject/", label: "MyProject", external: true },
 ];
 
 function NavLink({ item, className, onClick }: { item: (typeof navItems)[number]; className: string; onClick?: () => void }) {
-  if ("external" in item) {
-    return <a href={item.href} target="_blank" rel="noopener noreferrer" className={className} onClick={onClick}>{item.label}</a>;
-  }
   return <Link href={item.href} className={className} onClick={onClick}>{item.label}</Link>;
 }
 
