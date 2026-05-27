@@ -5,6 +5,14 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "solving-shallow-water-equations",
+    title: "浅水方程式の解き方 — 連続式から離散式への導出とスタガード格子の仕組み",
+    date: "2026-05-27",
+    description:
+      "局所慣性近似を題材に、連続方程式と運動方程式をスタガード格子上の差分式へ変換する過程を一歩ずつ導出。半陰的摩擦処理・CFL安定条件・乾湿境界の扱い・拡散波や完全SWEとの解法の違いまで網羅。",
+    keywords: ["浅水方程式", "数値解析", "水理モデル", "有限差分法", "GPU"],
+  },
+  {
     slug: "hydraulic-model-equations",
     title: "水理モデルの支配方程式を比較する — 完全SWE・局所慣性・拡散波の違い",
     date: "2026-05-24",
