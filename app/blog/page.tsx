@@ -5,6 +5,14 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "scenariomip-cmip7",
+    title: "ScenarioMIP-CMIP7 — 次期気候モデル比較の7シナリオ設計と排出駆動型への転換",
+    date: "2026-06-12",
+    description:
+      "CMIP7のシナリオ設計を解説。SSP5-8.5の廃止、7つの新シナリオ（H/HL/M/ML/L/VL/LN）、CO₂排出駆動型への転換、2500年延長シミュレーション、洪水リスク評価への影響を整理。GMD掲載。",
+    keywords: ["気候変動", "CMIP", "シナリオ分析", "統計解析", "レビュー"],
+  },
+  {
     slug: "myproject-tools",
     title: "MyProject — 途上国の防災・減災を支援するオープンツール集",
     date: "2026-05-27",
