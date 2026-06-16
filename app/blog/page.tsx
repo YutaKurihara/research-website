@@ -5,6 +5,42 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "early-warning-global",
+    title: "世界の早期警報システムの普及率と課題 — EW4Allの進捗と残されたギャップ",
+    titleEn: "Global early warning system coverage and gaps — EW4All progress and remaining challenges",
+    date: "2026-06-14",
+    description:
+      "EW4Allイニシアティブの進捗、早期警報の4本柱、地域別普及率、GBON観測インフラの欠陥、ラストマイル問題、資金ギャップ、仙台防災枠組との連携を体系的に分析。",
+    descriptionEn:
+      "Systematic analysis of the EW4All initiative progress, four pillars of EWS, regional coverage statistics, GBON observation gaps, last-mile challenges, funding gaps, and Sendai Framework linkage.",
+    keywords: ["早期警報", "防災", "EW4All", "GBON", "レビュー"],
+    keywordsEn: ["Early Warning", "DRR", "EW4All", "GBON", "Review"],
+  },
+  {
+    slug: "early-warning-oceania",
+    title: "大洋州・オセアニアにおける早期警報の現状と課題 — 太平洋島嶼国の脆弱性と地域協力",
+    titleEn: "Early warning in Oceania — Pacific Island vulnerability and regional cooperation",
+    date: "2026-06-14",
+    description:
+      "太平洋島嶼国14カ国の災害リスクプロファイル、気象観測ネットワークの現状、NMHS体制、地域協力枠組（PMC/SPREP/SPC）、国際支援プロジェクト、ラストマイル課題、気候変動と将来リスクを詳細に分析。",
+    descriptionEn:
+      "Detailed analysis of 14 Pacific Island Countries' disaster risk profiles, meteorological observation networks, NMHS capacity, regional cooperation frameworks (PMC/SPREP/SPC), international support, last-mile challenges, and climate change risks.",
+    keywords: ["早期警報", "防災", "太平洋島嶼国", "気候変動", "途上国"],
+    keywordsEn: ["Early Warning", "DRR", "Pacific Islands", "Climate Change", "Developing Countries"],
+  },
+  {
+    slug: "wmo-region5-early-warning",
+    title: "WMO第5地域（南西太平洋）の早期警報プロジェクトと課題分析",
+    titleEn: "WMO Region V (South-West Pacific) early warning projects and gap analysis",
+    date: "2026-06-14",
+    description:
+      "WMO RA Vの23加盟国概要、SWFDP太平洋、CREWS太平洋SIDS、熱帯低気圧・津波・洪水警報体制、気候サービス（PICOF/COSPPac）、観測ネットワーク強化、能力開発の課題と今後の展望を包括的に整理。",
+    descriptionEn:
+      "Comprehensive overview of WMO RA V: 23 member states, SWFDP-Pacific, CREWS Pacific SIDS, tropical cyclone/tsunami/flood warning systems, climate services (PICOF/COSPPac), observation network enhancement, capacity development, and future outlook.",
+    keywords: ["早期警報", "WMO", "防災", "太平洋島嶼国", "SWFDP"],
+    keywordsEn: ["Early Warning", "WMO", "DRR", "Pacific Islands", "SWFDP"],
+  },
+  {
     slug: "scenariomip-cmip7",
     title: "ScenarioMIP-CMIP7 — 次期気候モデル比較の7シナリオ設計と排出駆動型への転換",
     titleEn: "ScenarioMIP-CMIP7 — Seven new scenarios and the shift to emission-driven climate modeling",
