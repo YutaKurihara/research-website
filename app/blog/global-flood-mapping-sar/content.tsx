@@ -1,0 +1,555 @@
+"use client";
+
+import Link from "next/link";
+import { useLocale } from "@/lib/locale-context";
+
+export default function Content() {
+  const { locale } = useLocale();
+  const en = locale === "en";
+
+  return (
+    <div className="mx-auto max-w-2xl px-6">
+      <section className="pb-8 pt-20">
+        <Link
+          href="/blog"
+          className="text-xs uppercase tracking-widest text-muted transition-colors hover:text-foreground"
+        >
+          &larr; Blog
+        </Link>
+
+        <div className="mt-8">
+          <span className="text-[10px] uppercase tracking-widest text-muted">
+            2026-04-13
+          </span>
+          <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
+            {en
+              ? "Mapping Global Floods with a Decade of SAR Data — A Deep Learning Global Flood Dataset"
+              : "10年分のSARデータで世界の洪水を地図化する — 深層学習による全球洪水データセット"}
+          </h1>
+          <p className="mt-3 text-xs text-muted">
+            Misra, A. et al. (2025). Mapping global floods with 10 years of satellite radar data.
+            <em> Nature Communications</em>, 16, 5762.
+          </p>
+          <a href="https://doi.org/10.1038/s41467-025-60973-1" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-highlight hover:underline">
+            DOI: 10.1038/s41467-025-60973-1
+          </a>
+        </div>
+      </section>
+
+      <hr className="border-border" />
+
+      <article className="space-y-8 py-8 text-[13px] leading-relaxed">
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            {en ? "Why Read This Paper" : "この論文を読むべき理由"}
+          </h2>
+          <p className="text-muted">
+            {en
+              ? <>Microsoft AI for Good Research Lab applied a deep learning model to the full Sentinel-1 SAR archive spanning 10 years (2014{"–"}2024), constructing a <strong className="text-foreground">global flood dataset that detects 71% more flooded area than existing datasets</strong>. This is a groundbreaking study that uses SAR&apos;s all-weather observation capability to complement floods missed by conventional optical satellite-based datasets (GSW, MODIS) due to cloud cover. The model code, predictions, and dataset are all publicly available, enabling immediate practical application.</>
+              : <>Microsoft AI for Good Research Labが、Sentinel-1 SARの10年分のアーカイブ（2014〜2024年）に深層学習モデルを適用し、<strong className="text-foreground">既存データセットより71%多い洪水域を検出した全球洪水データセット</strong>を構築しました。従来の光学衛星ベースのデータセット（GSW, MODIS）では雲に遮られて見落とされていた洪水を、SARの全天候観測能力で補完する画期的な研究です。モデルコード・予測結果・データセットがすべて公開されており、実務への即時適用が可能です。</>}
+          </p>
+        </section>
+
+        <hr className="border-border" />
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            {en ? "Background and Challenges" : "背景と課題"}
+          </h2>
+          <p className="text-muted">
+            {en
+              ? "Floods are the most frequently occurring natural disaster worldwide, and their damage is increasing due to climate change. Accurate flood mapping is essential for risk assessment, disaster response, and insurance design, but existing datasets had the following challenges."
+              : "洪水は世界で最も頻繁に発生する自然災害であり、その被害は気候変動により拡大しています。正確な洪水マッピングは、リスク評価・災害対応・保険設計に不可欠ですが、既存のデータセットには以下の課題がありました。"}
+          </p>
+          <ul className="mt-3 ml-4 list-disc space-y-2 text-muted">
+            <li>
+              <strong className="text-foreground">
+                {en ? "Cloud cover problem with optical satellites" : "光学衛星の雲被覆問題"}
+              </strong>
+              {en
+                ? " — MODIS and Landsat cannot observe at the most critical timing due to clouds that occur simultaneously with the rainfall causing floods. This is particularly severe in tropical regions."
+                : " — MODISやLandsatは洪水を引き起こす降雨と同時に発生する雲により、最も重要なタイミングで観測できない。特に熱帯域で深刻。"}
+            </li>
+            <li>
+              <strong className="text-foreground">
+                {en ? "Temporal resolution constraints" : "時間解像度の制約"}
+              </strong>
+              {en
+                ? " — Flash floods lasting only a few hours cannot be captured with revisit periods of 6–16 days."
+                : " — 数時間で終わるフラッシュフラッドは、6〜16日の再訪周期では捕捉できない。"}
+            </li>
+            <li>
+              <strong className="text-foreground">
+                {en ? "Spatial bias" : "空間的な偏り"}
+              </strong>
+              {en
+                ? " — Databases based on damage reports biased toward developed countries (such as EM-DAT) underestimate floods in developing countries."
+                : " — 先進国に偏った被害報告に基づくデータベース（EM-DAT等）は、途上国の洪水を過小評価している。"}
+            </li>
+            <li>
+              <strong className="text-foreground">
+                {en ? "Lack of methodological consistency" : "手法の一貫性の欠如"}
+              </strong>
+              {en
+                ? " — Different sensors, thresholds, and methods are used for each event, making temporal comparisons difficult."
+                : " — イベントごとに異なるセンサー・閾値・手法で解析されており、時系列での比較が困難。"}
+            </li>
+          </ul>
+        </section>
+
+        <hr className="border-border" />
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            {en ? "Key Methodological Points" : "手法のポイント"}
+          </h2>
+
+          <h3 className="mb-2 font-medium text-foreground">
+            {en ? "1. Deep Learning Model (MobileNet Change Detection)" : "1. 深層学習モデル（MobileNet変化検出）"}
+          </h3>
+          <p className="mb-3 text-muted">
+            {en
+              ? <><strong className="text-foreground">MobileNet early fusion change detection model</strong> was adopted. Its lightweight architecture enables pixel-level classification even with limited computational resources.</>
+              : <><strong className="text-foreground">MobileNet early fusion change detection model</strong>を採用。軽量なアーキテクチャにより、限られた計算資源でもピクセルレベルの分類が可能です。</>}
+          </p>
+          <p className="mb-3 text-muted">
+            {en ? "The input consists of 4 channels:" : "入力は4チャンネルで構成されます："}
+          </p>
+          <ul className="ml-4 list-disc space-y-1 text-muted">
+            <li>{en ? "Binary change indicator for VV polarization" : "VV偏波の二値変化指標"}</li>
+            <li>{en ? "Binary change indicator for VH polarization" : "VH偏波の二値変化指標"}</li>
+            <li>{en ? "Delta amplitude (backscatter change) in VV band" : "VV帯のデルタ振幅（後方散乱変化量）"}</li>
+            <li>{en ? "Delta amplitude in VH band" : "VH帯のデルタ振幅"}</li>
+          </ul>
+          <p className="mt-3 text-muted">
+            {en
+              ? <>A key finding was that <strong className="text-foreground">filtering pixel values within a range consistent with the presence of water improved accuracy over using raw amplitude values directly</strong>. Specifically, thresholds of {"≤"}&thinsp;{"−"}17.5 dB for VV and {"≤"}&thinsp;{"−"}22.5 dB for VH were used as water surface signatures.</>
+              : <>重要な知見として、<strong className="text-foreground">生の振幅値をそのまま使うよりも、水の存在と整合するピクセル値の範囲でフィルタリングした方が精度が向上</strong>しました。具体的には、VV帯で−17.5 dB以下、VH帯で−22.5 dB以下を水面のシグナチャとしています。</>}
+          </p>
+
+          <h3 className="mt-6 mb-2 font-medium text-foreground">
+            {en ? "2. Training Data and Preprocessing" : "2. 学習データと前処理"}
+          </h3>
+          <p className="mb-3 text-muted">
+            {en
+              ? "Training data was constructed through manual labeling from four major flood events."
+              : "学習データは4つの大規模洪水イベントから手動ラベリングで構築されました。"}
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Event" : "イベント"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Period" : "時期"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Usage" : "用途"}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Pakistan floods" : "パキスタン洪水"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Aug 2022" : "2022年8月"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Training" : "学習"}
+                  </td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Greece floods" : "ギリシャ洪水"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Sep 2023" : "2023年9月"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Training" : "学習"}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Mozambique floods" : "モザンビーク洪水"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Mar 2023" : "2023年3月"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Validation" : "検証"}
+                  </td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Southeast Ethiopia floods" : "エチオピア南東部洪水"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Nov 2023" : "2023年11月"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Test" : "テスト"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-muted">
+            {en
+              ? "SAR preprocessing included orbit correction, gamma correction (normalization of backscatter by incidence angle), terrain correction using PlanetDEM, and speckle filtering. A change detection approach comparing consecutive image pairs (within 30 days, same observation geometry) was adopted."
+              : "SAR前処理として、軌道補正、ガンマ補正（入射角による後方散乱の正規化）、PlanetDEMを用いた地形補正、スペックルフィルタリングを適用。連続する画像ペア（30日以内、同一観測ジオメトリ）を比較する変化検出手法を採用しています。"}
+          </p>
+
+          <h3 className="mt-6 mb-2 font-medium text-foreground">
+            {en ? "3. False Positive Reduction (Post-processing)" : "3. 誤検出の低減（後処理）"}
+          </h3>
+          <p className="mb-3 text-muted">
+            {en
+              ? "False positives are a major challenge in SAR-based flood detection. This study performed filtering using five types of auxiliary datasets."
+              : "SARによる洪水検出では誤検出が大きな課題です。本研究では5種類の補助データセットを用いたフィルタリングを実施しています。"}
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Auxiliary Data" : "補助データ"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Purpose" : "用途"}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">
+                    {en ? "Soil moisture (10 km)" : "土壌水分（10km）"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Exclude false positives in arid regions" : "乾燥地域の誤検出を除外"}
+                  </td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">
+                    {en ? "Land surface temperature" : "地表面温度"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Exclude false positives from freeze-thaw cycles" : "凍結・融解サイクルによる誤検出を除外"}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">
+                    {en ? "DEM (slope)" : "DEM（傾斜）"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Exclude steep slopes >10° (terrain shadow)" : "10°以上の急傾斜地（地形影）を除外"}
+                  </td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">
+                    {en ? "ESA land cover" : "ESA土地被覆"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Exclude bare soil and urban areas" : "裸地・都市域を除外"}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">
+                    {en ? "Permanent water bodies" : "恒常的水域"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Reduce noise from lakes and rivers" : "湖沼・河川のノイズ低減"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="mt-6 mb-2 font-medium text-foreground">
+            {en ? "4. 10-Year Time Series Analysis" : "4. 10年間の時系列解析"}
+          </h3>
+          <p className="text-muted">
+            {en
+              ? "A consistent methodology was applied to the entire Sentinel-1 archive from October 2014 to September 2024. Monthly flood areas were aggregated and normalized by the number of available SAR observations. The data was decomposed into seasonal, trend, and residual components, and long-term trends were estimated using linear regression with seasonal dummy variables. Data inhomogeneities such as the Sentinel-1 offline period in late 2021 (approximately 50% reduction in observations) and single-polarization data before June 2017 were also addressed."
+              : "2014年10月〜2024年9月の全Sentinel-1アーカイブに一貫した手法を適用。月次の洪水面積を集計し、利用可能なSAR観測数で正規化。季節成分・トレンド・残差に分解し、季節ダミー変数を含む線形回帰で長期トレンドを推定しました。2021年後半のSentinel-1オフライン期間（観測数約50%減）や、2017年6月以前の単偏波データなど、データの不均一性にも対処しています。"}
+          </p>
+        </section>
+
+        <hr className="border-border" />
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            {en ? "Key Numerical Results" : "主な数値結果"}
+          </h2>
+
+          <h3 className="mb-2 font-medium text-foreground">
+            {en ? "Model Accuracy" : "モデル精度"}
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Evaluation" : "評価"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    IoU
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Precision" : "精度"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Recall" : "再現率"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    F1
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Internal test set" : "内部テストセット"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">0.67</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.68</td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">0.99</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.80</td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Kuro Siwo benchmark (43 events)" : "Kuro Siwoベンチマーク（43イベント）"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">0.63</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.84</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.72</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.77</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-muted">
+            {en
+              ? "F1 = 0.77 on the Kuro Siwo benchmark is comparable to existing models (0.75–0.80) and surpasses the Copernicus GFM system (0.72)."
+              : "Kuro Siwoベンチマーク上のF1=0.77は、既存モデル（0.75〜0.80）と同等で、Copernicus GFMシステム（0.72）を上回る。"}
+          </p>
+
+          <h3 className="mt-5 mb-2 font-medium text-foreground">
+            {en ? "Comparison with Existing Datasets" : "既存データセットとの比較"}
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Comparison" : "比較"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Additional Detection Rate" : "追加検出率"}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Global (vs. GSW + MODIS)" : "全球（GSW + MODIS比）"}
+                  </td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">+71%</td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Entire Africa" : "アフリカ全域"}
+                  </td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">+90%</td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Ethiopia" : "エチオピア"}
+                  </td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">+194%</td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Ethiopia, Dollo Ado" : "エチオピア・ドロアド"}
+                  </td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">+1013%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="mt-5 mb-2 font-medium text-foreground">
+            {en ? "10-Year Flood Trends" : "10年間の洪水トレンド"}
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Scenario" : "シナリオ"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "Annual Increase" : "年間増加率"}
+                  </th>
+                  <th className="border border-border bg-accent-light px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+                    {en ? "p-value" : "p値"}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "All data" : "全データ"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">6% &plusmn; 2%</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.0005</td>
+                </tr>
+                <tr className="bg-accent-light/50">
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">
+                    {en ? "Excluding 2022 (author-recommended)" : "2022年除外（著者推奨）"}
+                  </td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">5% &plusmn; 2%</td>
+                  <td className="border border-border px-3 py-2 font-medium text-foreground">0.01</td>
+                </tr>
+                <tr>
+                  <td className="border border-border px-3 py-2 text-muted">
+                    {en ? "Pre-2017 & excluding 2022" : "2017年以前＆2022年除外"}
+                  </td>
+                  <td className="border border-border px-3 py-2 text-muted">2% &plusmn; 3%</td>
+                  <td className="border border-border px-3 py-2 text-muted">0.5</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-muted">
+            {en
+              ? "The author-recommended estimate (5% per year) corresponds to approximately 60% increase in flood area over 10 years. The increasing trend in the Nigeria–Ethiopia corridor correlates with CMIP6 precipitation projections, though the authors are cautious about causal conclusions."
+              : "著者推奨の推定値（年5%増）は、10年で約60%の洪水面積増加に相当する。ナイジェリア〜エチオピア回廊での増加傾向はCMIP6の降水予測と相関するが、因果関係の結論には慎重。"}
+          </p>
+
+          <h3 className="mt-5 mb-2 font-medium text-foreground">
+            {en ? "Kenya 2024 Floods (Real-time Application)" : "ケニア2024年洪水（リアルタイム適用）"}
+          </h3>
+          <p className="text-muted">
+            {en
+              ? <>Applied in real time to the Kenya floods in spring 2024. Detected an estimated <strong className="text-foreground">75,000 hectares</strong> of agricultural damage, roughly consistent with the government&apos;s official statistics (68,000 hectares).</>
+              : <>2024年春のケニア洪水に対してリアルタイムで適用。推定<strong className="text-foreground">75,000ヘクタール</strong>の農地被害を検出し、政府の公式統計（68,000ヘクタール）と概ね一致しました。</>}
+          </p>
+        </section>
+
+        <hr className="border-border" />
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            {en ? "Significance and Implications" : "意義と示唆"}
+          </h2>
+          <ul className="ml-4 list-disc space-y-2 text-muted">
+            <li>
+              <strong className="text-foreground">
+                {en ? "Complements limitations of optical satellites" : "光学衛星の限界を補完"}
+              </strong>:
+              {en
+                ? " Detected 71% more floods globally that were missed due to cloud cover. Particularly effective in Africa and South Asia."
+                : " 雲被覆により見落とされていた洪水を全球で71%多く検出。特にアフリカ・南アジアで効果大。"}
+            </li>
+            <li>
+              <strong className="text-foreground">
+                {en ? "Consistent long-term dataset" : "一貫した長期データセット"}
+              </strong>:
+              {en
+                ? " Processing 10 years with the same methodology enables temporal comparison and trend analysis for the first time."
+                : " 10年間を同一手法で処理することで、時系列比較とトレンド分析が初めて可能に。"}
+            </li>
+            <li>
+              <strong className="text-foreground">
+                {en ? "Real-time disaster response" : "リアルタイム災害対応"}
+              </strong>:
+              {en
+                ? " Demonstrated through the Kenya floods that daily updates are possible with minimal human intervention."
+                : " ケニア洪水での実証により、最小限の人的介入で日次更新が可能であることを示した。"}
+            </li>
+            <li>
+              <strong className="text-foreground">
+                {en ? "Fully open" : "完全オープン"}
+              </strong>:
+              {en
+                ? " Model code (GitHub), predictions (Hugging Face), and input data (Planetary Computer) are all publicly available, allowing anyone to reproduce and extend the work."
+                : " モデルコード（GitHub）、予測結果（Hugging Face）、入力データ（Planetary Computer）がすべて公開されており、誰でも再現・拡張が可能。"}
+            </li>
+          </ul>
+        </section>
+
+        <hr className="border-border" />
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            {en ? "Limitations" : "限界"}
+          </h2>
+          <ul className="ml-4 list-disc space-y-2 text-muted">
+            <li>
+              {en
+                ? "Flash floods (lasting a few hours) cannot be captured by Sentinel-1’s revisit period (6–12 days)"
+                : "フラッシュフラッド（数時間の洪水）はSentinel-1の再訪周期（6〜12日）では捕捉できない"}
+            </li>
+            <li>
+              {en
+                ? "Detection accuracy drops significantly in urban areas due to building interference"
+                : "都市部では建物の干渉で検出精度が著しく低下する"}
+            </li>
+            <li>
+              {en
+                ? "Difficult to distinguish paddy irrigation from floods (intentional inundation and natural flooding have the same signature)"
+                : "水田の灌潑と洪水の区別が困難（意図的な浸水と自然洪水が同じシグナチャ）"}
+            </li>
+            <li>
+              {en
+                ? "Training data limited to 4 events, resulting in insufficient learning of diverse soil moisture conditions and terrain"
+                : "学習データが4イベントに限定されており、多様な土壌水分条件・地形の学習が不十分"}
+            </li>
+            <li>
+              {en
+                ? "Causal attribution to climate change is difficult with only 10 years of data"
+                : "10年間のデータでは気候変動への因果帰属は困難"}
+            </li>
+            <li>
+              {en
+                ? "Coarse spatial resolution of auxiliary data (soil moisture: 10 km) makes it unsuitable for pixel-level training"
+                : "補助データの空間解像度が粗い（土壌水分: 10km）ため、ピクセルレベルでの学習に不適"}
+            </li>
+          </ul>
+        </section>
+
+        <hr className="border-border" />
+
+        <section>
+          <h2 className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted">
+            References
+          </h2>
+          <ol className="ml-4 list-decimal space-y-2 text-xs text-muted">
+            <li>
+              Misra, A., White, K., Fobi Nsutezo, S., Straka, W., & Lavista, J. (2025).
+              Mapping global floods with 10 years of satellite radar data.
+              <em>Nature Communications</em>, 16, 5762.
+              DOI: 10.1038/s41467-025-60973-1
+            </li>
+          </ol>
+          <p className="mt-3 text-xs text-muted">
+            <a href="https://github.com/microsoft/ai4g-flood" target="_blank" rel="noopener noreferrer" className="text-highlight hover:underline">
+              {en ? "GitHub (model code)" : "GitHub（モデルコード）"}
+            </a>
+            {" / "}
+            <a href="https://huggingface.co/datasets/ai-for-good-lab/ai4g-flood-dataset" target="_blank" rel="noopener noreferrer" className="text-highlight hover:underline">
+              {en ? "Hugging Face (dataset)" : "Hugging Face（データセット）"}
+            </a>
+          </p>
+        </section>
+
+      </article>
+    </div>
+  );
+}

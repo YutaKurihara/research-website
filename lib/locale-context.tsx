@@ -14,7 +14,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("locale") as Locale | null;
-    if (saved === "en" || saved === "ja") setLocaleState(saved);
+    if (saved === "en" || saved === "ja") {
+      setLocaleState(saved);
+    } else if (navigator.language.startsWith("en")) {
+      setLocaleState("en");
+    }
   }, []);
 
   const setLocale = (l: Locale) => {

@@ -7,8 +7,10 @@ export interface Publication {
   type: "journal" | "preprint";
   doi: string;
   abstract: string;
+  abstractEn?: string;
   keywords: string[];
   details: string;
+  detailsEn?: string;
 }
 
 export const profile = {
@@ -35,6 +37,8 @@ export const publications: Publication[] = [
     doi: "10.1016/j.ijdrr.2026.106178",
     abstract:
       "カガヤン川流域における将来の気候変動影響の不確実性を、ベイズアプローチを用いて定量化した研究。気候モデルの不確実性を確率的に評価し、洪水リスクへの影響を分析する。",
+    abstractEn:
+      "A study quantifying uncertainty in future climate change impacts on the Cagayan River Basin using a Bayesian approach. Probabilistically evaluates climate model uncertainty and analyzes implications for flood risk.",
     keywords: [
       "Climate Change",
       "Bayesian Approach",
@@ -51,6 +55,15 @@ export const publications: Publication[] = [
 - 複数のGCM出力を用いた気候予測の不確実性分析
 - ベイズ統計による確率的影響評価
 - カガヤン川流域への適用と洪水リスクの将来変化推定`,
+    detailsEn: `## Overview
+
+Climate change impacts on flood risk involve significant uncertainty. This study proposes a framework to quantify that uncertainty using a Bayesian approach, probabilistically evaluating future climate change impacts in the Cagayan River Basin, Philippines.
+
+## Methods
+
+- Uncertainty analysis of climate projections using multiple GCM outputs
+- Probabilistic impact assessment through Bayesian statistics
+- Application to the Cagayan River Basin and estimation of future flood risk changes`,
   },
   {
     id: "flood-direct-damage",
@@ -63,6 +76,8 @@ export const publications: Publication[] = [
     doi: "10.1016/j.ijdrr.2024.105067",
     abstract:
       "災害後の復興予算の配分は大きな課題です。一部の自治体に過剰な資金が配分される一方、不足する自治体もあり、復興の遅れにつながります。本研究では、Google Earth Engine（GEE）とSentinel-1衛星画像を用いて、洪水による直接被害を迅速に評価する手法を開発しました。2020年にフィリピンを襲った台風Ulyssesによるカガヤン・バレー地域の被害評価に適用し、従来1か月以上かかっていた現地調査を、衛星観測からわずか2日で代替できることを示しました。",
+    abstractEn:
+      "Post-disaster recovery budget allocation is a major challenge, with some municipalities over-funded while others remain under-funded, delaying reconstruction. This study developed a rapid flood direct damage assessment method using Google Earth Engine (GEE) and Sentinel-1 SAR imagery. Applied to Typhoon Ulysses (2020) in the Cagayan Valley, Philippines, the method can replace field surveys that previously took over one month with satellite-based results available in just two days.",
     keywords: [
       "Remote Sensing",
       "Google Earth Engine",
@@ -86,6 +101,21 @@ Google Earth Engine（GEE）とSentinel-1 SAR衛星画像を用いて、洪水�
 
 - 浸水面積: 2,033 km²（地域の約8%）
 - 衛星解析は災害後2日で結果取得可能（従来の現地調査は1か月以上）`,
+    detailsEn: `## Overview
+
+Developed a method for rapid flood direct damage assessment using Google Earth Engine (GEE) and Sentinel-1 SAR satellite imagery. Applied to Typhoon Ulysses (2020) damage assessment in the Cagayan River Basin (Region II), Philippines.
+
+## Methods
+
+- Automated flood extent detection using Sentinel-1 SAR and NDFI (10 m resolution)
+- DEM-based flood depth estimation with FwDET-GEE
+- Land use/land cover classification with Random Forest (500 trees, 93% accuracy)
+- Damage estimation using depth-damage curves (GMMA-RAP, Shrestha, Tariq) for residential and agricultural assets
+
+## Key Results
+
+- Inundated area: 2,033 km² (approx. 8% of the region)
+- Satellite-based assessment available within 2 days post-disaster (vs. 1+ month for field surveys)`,
   },
   {
     id: "river-morphology-monitoring",
@@ -98,6 +128,8 @@ Google Earth Engine（GEE）とSentinel-1 SAR衛星画像を用いて、洪水�
     doi: "10.2208/jscejj.23-16067",
     abstract:
       "衛星画像から推定した標高と観測河川水位を用いて、河川構造物周辺の河川地形をモニタリングする手法を開発した。",
+    abstractEn:
+      "Developed a method for monitoring river morphology around river structures by combining satellite-derived elevation estimates with observed river water levels.",
     keywords: [
       "River Morphology",
       "Satellite Images",
@@ -115,5 +147,15 @@ Google Earth Engine（GEE）とSentinel-1 SAR衛星画像を用いて、洪水�
 - 観測河川水位データとの統合
 - 河川構造物周辺の地形変化検出
 - 時系列モニタリング手法の構築`,
+    detailsEn: `## Overview
+
+River morphology changes around hydraulic structures are a critical concern for flood management. This study proposes a method for efficiently monitoring river morphological changes by integrating satellite-derived elevation data with observed river water levels.
+
+## Methods
+
+- Elevation estimation from satellite imagery
+- Integration with observed river water level data
+- Detection of morphological changes around river structures
+- Development of time-series monitoring methodology`,
   },
 ];
