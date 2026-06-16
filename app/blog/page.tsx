@@ -5,6 +5,30 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "frdp-pacific-resilience",
+    title: "太平洋レジリエント開発枠組み（FRDP）2017–2030 — 太平洋島嶼国の統合的な防災・気候変動適応戦略",
+    titleEn: "Framework for Resilient Development in the Pacific (FRDP) 2017–2030 — Integrated DRR and climate adaptation strategy",
+    date: "2026-06-14",
+    description:
+      "FRDPの3つのGoal（統合的適応・低炭素開発・災害対応）、JNAPsによる国別実施、太平洋レジリエンスパートナーシップ（PRP）、資金メカニズム、仙台防災枠組・パリ協定・SDGsとの連携を体系的に分析。",
+    descriptionEn:
+      "Systematic analysis of FRDP's three goals (integrated adaptation, low-carbon development, disaster response), JNAPs implementation, Pacific Resilience Partnership, financing mechanisms, and linkage with Sendai Framework, Paris Agreement, and SDGs.",
+    keywords: ["防災", "気候変動", "太平洋島嶼国", "レジリエンス", "レビュー"],
+    keywordsEn: ["DRR", "Climate Change", "Pacific Islands", "Resilience", "Review"],
+  },
+  {
+    slug: "pims-pacific-meteorology",
+    title: "太平洋島嶼気象戦略（PIMS）2017–2026 — 太平洋気象サービスの強化と持続可能性",
+    titleEn: "Pacific Islands Meteorological Strategy (PIMS) 2017–2026 — Strengthening Pacific weather services",
+    date: "2026-06-14",
+    description:
+      "PIMSの5つの戦略的優先事項（NMHS能力強化・観測・サービス提供・パートナーシップ・研究）、太平洋気象評議会（PMC）の役割、国別NMHS現状分析、GBON/SOFF/CliDE、実施状況と2026年後の展望。",
+    descriptionEn:
+      "Analysis of PIMS's five strategic priorities (institutional strengthening, observations, service delivery, partnerships, research), PMC role, country-level NMHS assessment, GBON/SOFF/CliDE, implementation status, and post-2026 outlook.",
+    keywords: ["早期警報", "WMO", "太平洋島嶼国", "NMHS", "レビュー"],
+    keywordsEn: ["Early Warning", "WMO", "Pacific Islands", "NMHS", "Review"],
+  },
+  {
     slug: "early-warning-global",
     title: "世界の早期警報システムの普及率と課題 — EW4Allの進捗と残されたギャップ",
     titleEn: "Global early warning system coverage and gaps — EW4All progress and remaining challenges",
