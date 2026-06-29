@@ -27,59 +27,6 @@ export const profile = {
 
 export const publications: Publication[] = [
   {
-    id: "rainfall-forecast-uncertainty",
-    title:
-      "Uncertainty of Rainfall Forecasts for Impact-Based Flood Warning in the Cagayan River Basin, Philippines",
-    authors: "Kurihara, Y., Miyamoto, M.",
-    venue: "Natural Hazards and Earth System Sciences (EGUsphere preprint)",
-    year: 2026,
-    type: "preprint",
-    doi: "10.5194/egusphere-2026-3482",
-    abstract:
-      "複数の気象センターのアンサンブル降雨予測を、自治体レベルの確率的洪水影響警報に変換するフレームワークを構築。ECMWF・NCEP・UKMOの予測にベイズモデル平均化（BMA）を適用し、降雨確率分布を生成。検証期間（2015–2025年）でリードタイム5–6日まで有用なスキルを確認。7日間累積降雨分布に確率再較正を施し、予測信頼性を向上。降雨–被害関数を通じて人口・建物・農地への影響を推定。台風Ulyssesのケーススタディで実用性を実証。",
-    abstractEn:
-      "Establishes a framework converting ensemble rainfall forecasts from multiple meteorological centers into municipality-level probabilistic flood impact warnings for the Cagayan River Basin, Philippines. Applies Bayesian Model Averaging to ECMWF, NCEP, and UKMO forecasts to generate rainfall probability distributions. Verification (2015–2025) showed useful skill through lead days 5–6. Seven-day accumulated rainfall distributions underwent probability recalibration, improving forecast reliability. Rainfall–damage functions estimate impacts on population, buildings, and agricultural areas. A Typhoon Ulysses case study demonstrates practical application.",
-    keywords: [
-      "Impact-Based Forecasting",
-      "Bayesian Model Averaging",
-      "Ensemble Forecasting",
-      "Flood Warning",
-      "Cagayan River Basin",
-    ],
-    details: `## 概要
-
-複数の気象センター（ECMWF、NCEP、UKMO）のアンサンブル降雨予測を統合し、フィリピン・カガヤン川流域の自治体レベルで確率的な洪水影響警報を発出するフレームワークを構築した。
-
-## 手法
-
-- ベイズモデル平均化（BMA）による複数モデルの統合
-- 7日間累積降雨の確率分布生成と再較正
-- 降雨–被害関数による人口・建物・農地への影響推定
-- 検証期間（2015–2025年）でのスキル評価
-
-## 主な結果
-
-- リードタイム5–6日まで有用な予測スキル
-- 確率再較正により予測信頼性が向上
-- 台風Ulyssesケーススタディで洪水防災意思決定への実用性を実証`,
-    detailsEn: `## Overview
-
-Establishes a framework integrating ensemble rainfall forecasts from multiple meteorological centers (ECMWF, NCEP, UKMO) to issue municipality-level probabilistic flood impact warnings for the Cagayan River Basin, Philippines.
-
-## Methods
-
-- Bayesian Model Averaging (BMA) for multi-model integration
-- Probability distribution generation and recalibration for 7-day accumulated rainfall
-- Rainfall–damage functions estimating impacts on population, buildings, and agricultural areas
-- Skill assessment over the verification period (2015–2025)
-
-## Key Results
-
-- Useful forecast skill through lead days 5–6
-- Probability recalibration improved forecast reliability
-- Typhoon Ulysses case study demonstrated practical applicability for flood preparedness decisions`,
-  },
-  {
     id: "bayesian-climate-change",
     title:
       "Quantifying Uncertainty in Climate Change Impacts: A Bayesian Approach for the Cagayan River Basin",
