@@ -27,6 +27,47 @@ export const profile = {
 
 export const publications: Publication[] = [
   {
+    id: "climate-landuse-flood-exposure",
+    title:
+      "Climate and Land-Use Drivers of Future Flood Exposure and Damage in the Cagayan River Basin, Philippines",
+    authors: "Kurihara, Y., Miyamoto, M., Kyuzaki, R.",
+    venue: "Journal of Hydrology: Regional Studies",
+    year: 2026,
+    type: "journal",
+    doi: "10.1016/j.ejrh.2026.103690",
+    abstract:
+      "フィリピン・カガヤン川流域における将来の洪水曝露と被害を、気候変動と土地利用変化の2つの駆動要因から分析した研究。気候シナリオと土地利用シナリオを組み合わせ、将来の洪水リスクの変化を定量的に評価する。",
+    abstractEn:
+      "Analyzes future flood exposure and damage in the Cagayan River Basin, Philippines, driven by climate change and land-use change. Combines climate and land-use scenarios to quantitatively assess future flood risk changes.",
+    keywords: [
+      "Climate Change",
+      "Land Use Change",
+      "Flood Exposure",
+      "Cagayan River Basin",
+      "Damage Assessment",
+    ],
+    details: `## 概要
+
+フィリピン・カガヤン川流域を対象に、気候変動と土地利用変化が将来の洪水曝露と被害に与える影響を定量的に分析した研究。複数の気候シナリオと土地利用シナリオを組み合わせ、洪水リスクの将来変化を評価するフレームワークを構築した。
+
+## 手法
+
+- 複数の気候シナリオに基づく将来降雨の予測
+- 土地利用変化シナリオの構築と洪水モデルへの反映
+- 洪水曝露（人口・建物・農地）の将来変化推定
+- 被害関数を用いた洪水直接被害の将来予測`,
+    detailsEn: `## Overview
+
+Quantitatively analyzes the impacts of climate change and land-use change on future flood exposure and damage in the Cagayan River Basin, Philippines. Constructs a framework combining multiple climate and land-use scenarios to assess future changes in flood risk.
+
+## Methods
+
+- Future rainfall projections based on multiple climate scenarios
+- Land-use change scenario development and integration into flood models
+- Estimation of future changes in flood exposure (population, buildings, agricultural areas)
+- Future flood direct damage projection using depth-damage functions`,
+  },
+  {
     id: "bayesian-climate-change",
     title:
       "Quantifying Uncertainty in Climate Change Impacts: A Bayesian Approach for the Cagayan River Basin",
