@@ -434,19 +434,6 @@ export default function Content() {
             </li>
             <li>
               <Link
-                href="/blog/dsge-disaster-macroeconomics"
-                className="text-highlight hover:underline"
-              >
-                {en
-                  ? "Assessing the Macroeconomic Impact of Disasters with DSGE Models"
-                  : "災害のマクロ経済影響を DSGE モデルで評価する"}
-              </Link>
-              {en
-                ? " — The DIGNAD framework behind the economic indicators of the Flood Monitor"
-                : " — 日次モニターの経済指標の背後にある DIGNAD モデル"}
-            </li>
-            <li>
-              <Link
                 href="/blog/extreme-precipitation-climate-change"
                 className="text-highlight hover:underline"
               >
