@@ -23,12 +23,12 @@ export const metadata: Metadata = {
     template: "%s | Kurihara Yuta",
   },
   description:
-    "Research portfolio of Kurihara Yuta. Flood risk assessment, probabilistic rainfall forecasting, remote sensing, climate change impact analysis. Oriental Consultants Global / GRIPS ICHARM.",
+    "Research portfolio of Kurihara Yuta (Ph.D. in Disaster Management). SAR-based flood damage assessment, probabilistic climate change impact analysis, impact-based flood early warning, and macroeconomic (DSGE) impact assessment in Southeast Asia. Oriental Consultants Global / ICHARM.",
   metadataBase: new URL(siteUrl),
   openGraph: {
     title: "Kurihara Yuta | Disaster Risk Reduction Researcher",
     description:
-      "Flood risk assessment, probabilistic forecasting, remote sensing, and climate change impact analysis in Southeast Asia.",
+      "SAR flood damage assessment, probabilistic climate change impact analysis, impact-based early warning, and DSGE economic impact assessment in Southeast Asia.",
     url: siteUrl,
     siteName: "Kurihara Yuta Research",
     locale: "en_US",

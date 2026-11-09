@@ -5,6 +5,42 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "dsge-disaster-macroeconomics",
+    title: "災害のマクロ経済影響を DSGE モデルで評価する — IMF DIGNAD を中心に",
+    titleEn: "Assessing the Macroeconomic Impact of Disasters with DSGE Models — The IMF DIGNAD Framework",
+    date: "2026-11-09",
+    description:
+      "自然災害が GDP・財政・債務に与える中長期の影響をどう測るか。実証研究の論点（創造的破壊か持続的損失か）を整理し、IMF の DIGNAD モデルの構造（公共・民間資本、資本毀損ショック、適応投資）と、災害 DSGE が答えられること・答えられないことを解説。",
+    descriptionEn:
+      "How to measure the medium- and long-run effects of natural disasters on GDP, fiscal balances and debt. Reviews the empirical debate (creative destruction vs. persistent losses), the structure of the IMF DIGNAD model (public and private capital, destruction shocks, adaptation investment), and what disaster DSGE models can and cannot answer.",
+    keywords: ["マクロ経済", "DSGE", "災害経済学", "防災投資", "レビュー"],
+    keywordsEn: ["Macroeconomics", "DSGE", "Disaster Economics", "DRR Investment", "Review"],
+  },
+  {
+    slug: "bma-ensemble-impact-based-warning",
+    title: "複数センターのアンサンブル降雨予測を統合する — ベイズモデル平均化と影響予測型警報",
+    titleEn: "Combining Multi-Centre Ensemble Rainfall Forecasts — Bayesian Model Averaging and Impact-Based Warning",
+    date: "2026-11-09",
+    description:
+      "ECMWF・NCEP・UKMO のアンサンブル予測はなぜそのままでは確率として使えないのか。BMA・EMOS による統計的後処理、CRPS・Brier スコア・ランクヒストグラムによる検証、TIGGE/S2S データベース、確率降雨を人口・建物・農地の影響に変換する影響予測型警報の設計を解説。",
+    descriptionEn:
+      "Why raw ensembles from ECMWF, NCEP and UKMO cannot be read as probabilities, how BMA and EMOS post-processing fix this, verification with CRPS, Brier score and rank histograms, the TIGGE and S2S databases, and how calibrated rainfall probabilities become impact-based warnings for people, buildings and crops.",
+    keywords: ["早期警報", "アンサンブル予測", "洪水予測", "統計解析", "レビュー"],
+    keywordsEn: ["Early Warning", "Ensemble Forecasting", "Flood Forecasting", "Statistics", "Review"],
+  },
+  {
+    slug: "sar-burned-area-mapping",
+    title: "衛星で焼失域を把握する — 光学 dNBR と SAR 後方散乱の多時期差分",
+    titleEn: "Mapping Burned Areas from Space — Optical dNBR and Multi-Temporal SAR Backscatter Change",
+    date: "2026-11-09",
+    description:
+      "森林・泥炭火災の焼失域を衛星から推定する手法の整理。NBR/dNBR/RdNBR と MODIS/VIIRS の全球プロダクト、煙霧と雲に強い Sentinel-1 後方散乱の変化検出、熱帯特有の課題、ホットスポットとの組み合わせによる運用設計。",
+    descriptionEn:
+      "A review of satellite burned-area mapping: NBR, dNBR and RdNBR with MODIS/VIIRS global products, haze- and cloud-robust change detection with Sentinel-1 backscatter, tropical challenges, and operational design combining SAR with active-fire hotspots.",
+    keywords: ["森林火災", "SAR", "リモートセンシング", "Sentinel-1", "レビュー"],
+    keywordsEn: ["Forest Fire", "SAR", "Remote Sensing", "Sentinel-1", "Review"],
+  },
+  {
     slug: "frdp-pacific-resilience",
     title: "太平洋レジリエント開発枠組み（FRDP）2017–2030 — 太平洋島嶼国の統合的な防災・気候変動適応戦略",
     titleEn: "Framework for Resilient Development in the Pacific (FRDP) 2017–2030 — Integrated DRR and climate adaptation strategy",

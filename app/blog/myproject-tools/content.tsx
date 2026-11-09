@@ -21,7 +21,7 @@ export default function Content() {
 
         <div className="mt-8">
           <span className="text-[10px] uppercase tracking-widest text-muted">
-            2026-05-27
+            2026-05-27 &middot; {en ? "Updated 2026-11-09" : "更新 2026-11-09"}
           </span>
           <h1 className="mt-2 text-2xl font-light leading-tight tracking-tight">
             {en
@@ -220,15 +220,16 @@ export default function Content() {
             <p className="mt-3 text-muted">
               {en ? (
                 <>
-                  A Python notebook for{" "}
+                  A set of six Python notebooks for{" "}
                   <strong className="text-foreground">
                     bias-correcting and downscaling
                   </strong>{" "}
-                  NASA NEX-GDDP-CMIP6 climate model outputs. By combining global
-                  climate projections with local observational data, it enables
-                  assessment of future changes in precipitation and temperature.
-                  It is used to prepare input data for climate change impact
-                  assessments in developing countries.
+                  NASA NEX-GDDP-CMIP6 climate model outputs — from GCM skill
+                  evaluation and data retrieval to quantile-based bias
+                  correction against GSMaP or gauge data and the estimation of
+                  basin-mean design rainfall. It is used to prepare input data
+                  for climate change impact assessments in developing countries
+                  (updated October 2026).
                 </>
               ) : (
                 <>
@@ -236,10 +237,10 @@ export default function Content() {
                   <strong className="text-foreground">
                     バイアス補正・ダウンスケーリング
                   </strong>
-                  するPythonノートブックです。
-                  対象地域の観測データと組み合わせて、
-                  将来の降水量・気温の変化を評価できます。
-                  途上国で気候変動影響評価を行う際の入力データ作成に利用されています。
+                  する6つのPythonノートブックです。
+                  GCMの精度評価とデータ取得から、GSMaPまたは地上観測による順序統計量補正、
+                  流域平均雨量の確率雨量算定までを一貫して行えます。
+                  途上国で気候変動影響評価を行う際の入力データ作成に利用されています（2026年10月更新）。
                 </>
               )}
             </p>
@@ -253,47 +254,57 @@ export default function Content() {
             </a>
           </div>
 
-          {/* Macroeconomic */}
+          {/* Daily Flood Monitor */}
           <div className="mb-6 rounded border border-border p-4">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-medium text-foreground">
                   {en
-                    ? "Macroeconomic Disaster Impact — DSGE Model for Economic Loss Assessment"
-                    : "Macroeconomic Disaster Impact — 経済被害評価DSGEモデル"}
+                    ? "Daily Flood Damage and Economic Impact Monitor"
+                    : "洪水被害・経済影響 日次モニター"}
                 </p>
                 <p className="mt-1 text-[10px] text-muted">
-                  {en ? "Phase 13 (2025)" : "第13期（2025年）"}
+                  {en ? "Phase 13 (2025) — released October 2026" : "第13期（2025年）— 2026年10月公開"}
                 </p>
               </div>
-              <span className="shrink-0 rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-[10px] text-yellow-500">
-                {en ? "Coming Soon" : "近日公開"}
+              <span className="shrink-0 rounded-full border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-[10px] text-green-500">
+                {en ? "Available" : "利用可能"}
               </span>
             </div>
             <p className="mt-3 text-muted">
               {en ? (
                 <>
-                  A tool based on the IMF Dynamic Stochastic General Equilibrium
-                  (DSGE) model that{" "}
+                  An automated pipeline that runs once a day for the Cagayan
+                  River Basin (Region II, Philippines): satellite rainfall
+                  (GSMaP) drives the{" "}
                   <strong className="text-foreground">
-                    simulates the long-term macroeconomic impact of flood damage
-                  </strong>
-                  . It quantifies cascading effects over multiple years, including
-                  capital stock destruction, fiscal expenditure, and
-                  reconstruction investment.
+                    RRI inundation model, direct damage estimation, and a
+                    regional DSGE model (IMF DIGNAD)
+                  </strong>{" "}
+                  in sequence. The page shows the latest rainfall and
+                  inundation maps, the estimated direct damage of the current
+                  event, and annual direct damage with the resulting GRDP loss
+                  for 2020 onwards.
                 </>
               ) : (
                 <>
-                  IMFの動学的確率的一般均衡（DSGE）モデルをベースに、
+                  フィリピン・カガヤン川流域（Region II）を対象に、衛星降水量（GSMaP）を入力として
                   <strong className="text-foreground">
-                    洪水被害の長期マクロ経済影響をシミュレーション
+                    RRI モデルによる浸水解析、直接被害額の算定、地域 DSGE モデル（IMF DIGNAD）による経済影響評価
                   </strong>
-                  するツールです。
-                  資本ストック毀損、財政支出、復旧投資などの波及効果を
-                  複数年にわたって定量化します。
+                  を 1 日 1 回自動で実行するパイプラインです。最新の雨量・浸水地図、
+                  進行中の洪水の直接被害額、2020 年以降の年間直接被害額と GRDP 毀損率を掲載しています。
                 </>
               )}
             </p>
+            <a
+              href={`${baseUrl}/flood-monitor`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-xs text-highlight hover:underline"
+            >
+              {en ? "Open the monitor →" : "モニターを見る →"}
+            </a>
           </div>
         </section>
 
@@ -355,13 +366,13 @@ export default function Content() {
                 </tr>
                 <tr className="bg-accent-light/50">
                   <td className="border border-border px-3 py-2 font-medium text-foreground">
-                    DSGE Model
+                    Flood Monitor
                   </td>
                   <td className="border border-border px-3 py-2 text-muted">
-                    Python / Dynare
+                    Python / RRI / DIGNAD (Dynare)
                   </td>
                   <td className="border border-border px-3 py-2 text-muted">
-                    {en ? "IMF WEO, Damage data" : "IMF WEO, 被害データ"}
+                    {en ? "GSMaP, DEM, land use, IMF WEO" : "GSMaP, DEM, 土地利用, IMF WEO"}
                   </td>
                 </tr>
               </tbody>
@@ -420,6 +431,19 @@ export default function Content() {
               {en
                 ? " — The damage cost estimation methodology in Flood Damage"
                 : " — Flood Damageの被害額算定手法"}
+            </li>
+            <li>
+              <Link
+                href="/blog/dsge-disaster-macroeconomics"
+                className="text-highlight hover:underline"
+              >
+                {en
+                  ? "Assessing the Macroeconomic Impact of Disasters with DSGE Models"
+                  : "災害のマクロ経済影響を DSGE モデルで評価する"}
+              </Link>
+              {en
+                ? " — The DIGNAD framework behind the economic indicators of the Flood Monitor"
+                : " — 日次モニターの経済指標の背後にある DIGNAD モデル"}
             </li>
             <li>
               <Link

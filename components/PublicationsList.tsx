@@ -45,6 +45,8 @@ export default function PublicationsList() {
                   </p>
                   <p className="mt-1 text-xs text-muted">
                     {pub.authors} &middot; {pub.venue}
+                    {pub.volume ? `, ${pub.volume}` : ""}
+                    {pub.openAccess ? " · Open Access" : ""}
                   </p>
                   <p className="mt-2 text-xs text-muted line-clamp-2">
                     {en && pub.abstractEn ? pub.abstractEn : pub.abstract}

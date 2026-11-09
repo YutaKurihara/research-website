@@ -34,6 +34,8 @@ export default function PublicationDetail({ pub }: { pub: Publication }) {
           </h1>
           <p className="mt-3 text-xs text-muted">
             {pub.authors} &middot; {pub.venue}
+            {pub.volume ? `, ${pub.volume}` : ""}
+            {pub.openAccess ? " · Open Access" : ""}
           </p>
           <a
             href={`https://doi.org/${pub.doi}`}
