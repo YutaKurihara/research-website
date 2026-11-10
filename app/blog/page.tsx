@@ -5,6 +5,138 @@ export const metadata: Metadata = { title: "Blog" };
 
 const posts: BlogPost[] = [
   {
+    slug: "ews-governance-indonesia",
+    title: "インドネシアの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Indonesia — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "インドネシアの予警報制度を、2007年防災法・2009年気象気候地球物理法・2019年津波大統領令と CFE-DM 2025年版ハンドブックに基づき整理し、警報権限がハザード別の分野法令に分散する構造、BMKG・BNPB・BPBD の役割、2025年の予算削減や2021〜2026年の災害事例が示す課題を解説します。",
+    descriptionEn:
+      "How warning authority in Indonesia is split across sectoral laws while the disaster law stays silent, who warns and who orders evacuation, and the challenges revealed by the 2025 budget cuts and the disasters of 2021-2026.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-philippines",
+    title: "フィリピンの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in the Philippines — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "フィリピンの災害予警報制度を、RA 10121（2010年）から2025年の切迫災害状態宣言法（RA 12287）までの法制度、PAGASA・PHIVOLCS・NDRRMC・地方自治体の役割分担、警報レベルと伝達経路、2021〜2025年の台風・地震が示した課題、そして日本の協力の観点から整理します。",
+    descriptionEn:
+      "Early warning governance in the Philippines: statutes from RA 10121 (2010) to the 2025 State of Imminent Disaster Act, the roles of PAGASA, PHIVOLCS, the NDRRMC and local governments, warning levels and channels, lessons from the typhoons and earthquakes of 2021-2025, and Japanese cooperation.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-thailand",
+    title: "タイの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Thailand — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "2007年防災減災法は内務大臣から地方自治体首長までに避難命令の権限を与える一方、警報の発表義務をどの機関にも課していないというタイ特有の構造を軸に、TMD・ONWR・DDPM など関係機関の役割、警報の流れ、2025年のセルブロードキャスト導入とハートヤイ洪水が示した課題を整理します。",
+    descriptionEn:
+      "Thailand legislates evacuation powers in detail but assigns no agency a statutory duty to warn; this article traces how TMD, ONWR, RID, DWR, DMR and DDPM fill that gap, the 2025 cell-broadcast roll-out and the lessons of the November 2025 Hat Yai flood.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-vietnam",
+    title: "ベトナムの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Vietnam — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "気象水文機関が予報とともに1〜5の災害リスクレベルを公表し、各レベルが社主席から首相・国家主席までの指揮階層に対応するベトナムの法定された警報連鎖を、2024〜2026年の民間防衛法・農業環境省設立・県廃止による再編と、記録的な2025年シーズンの教訓から整理する。",
+    descriptionEn:
+      "How Vietnam codifies its warning chain, from the hydro-meteorological bulletin with its 1–5 risk level to commune-level evacuation orders, and how the civil-defence law, the 2025 ministry merger and the abolition of districts rewired it ahead of the record 2025 season.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-malaysia",
+    title: "マレーシアの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Malaysia — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "災害管理法を持たないマレーシアの予警報制度を、MKN 指令第20号と2024年の NADMA 指令第1号に基づく三層委員会、気象局・灌漑排水局・NADMA の役割分担、2021年タマンスリムダ洪水をめぐる2026年の高裁判決、セルブロードキャスト導入までの改革と課題から整理します。",
+    descriptionEn:
+      "How Malaysia runs disaster early warning without a disaster management act: the Directive No. 20 committee system, the roles of MetMalaysia, JPS and NADMA, the 2026 Taman Sri Muda judgment, and the reforms and gaps up to the November 2026 cell-broadcast pilot.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-cambodia",
+    title: "カンボジアの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Cambodia — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "カンボジアの予警報制度を、2015年災害管理法と2007年水資源管理法が生む「二重本部」構造、NCDM・MOWRAM・州郡コミューン委員会・赤十字の役割、メコン川の警戒水位とEWS1294による伝達、EW4Allロードマップまで法令原文と公的報告に基づいて整理し、警報権限の法的空白と州止まりの伝達という課題を論じます。",
+    descriptionEn:
+      "A review of early-warning governance in Cambodia: the dual headquarters of the 2015 Law on Disaster Management and the 2007 Water Law, the roles of NCDM, MOWRAM and local committees, EWS1294, the EW4All roadmap and the open question of who warns and who evacuates.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-laos",
+    title: "ラオスの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Lao PDR — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "災害管理法（2019年）が警報と避難通知の発出者を郡長・県知事・政府と明示する一方、気象水文法（2017年）は天然資源環境省にハザード警報を委ね、2025年3月の省庁再編後も未改正のまま残るラオスの二重構造を、ダム放流の法令、EW4All の進捗、2025年全国調査の数値とともに整理します。",
+    descriptionEn:
+      "Lao PDR names the warning issuer by law, yet splits the mandate between the 2019 Law on Disaster Management and the 2017 Law on Meteorology and Hydrology, and the named ministries merged in 2025; the article covers laws, actors, dam-release rules and last-mile evidence.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-myanmar",
+    title: "ミャンマーの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Myanmar — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "2013年自然災害管理法と2015年規則・常設命令を軸に、ミャンマーの予警報の法的枠組み、DMH・DDM・NDMC・GAD の役割、2021年以降の軍政下での制度運用と NUG・民族組織の並行構造、サイクロン・モカ、2024年洪水、2025年地震の事例から見える課題を整理します。",
+    descriptionEn:
+      "A review of early-warning governance in Myanmar: the 2013 Natural Disaster Management Law, the roles of DMH, DDM, NDMC and the GAD line, post-2021 military rule and parallel NUG and ethnic structures, and lessons from Cyclone Mocha, the 2024 floods and the 2025 earthquake.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-singapore",
+    title: "シンガポールの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Singapore — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "単一の災害対策法を持たず、民間防衛法・環境庁法・公益事業法・越境ヘイズ法・感染症法にハザード別の警報権限が分散するシンガポールについて、SCDF・MSS/NEA・PUB・MOH の役割分担、2024〜2026年の法改正（公衆衛生態勢・沿岸保護法・SG Alert）と課題を整理します。",
+    descriptionEn:
+      "Singapore has no single disaster management act and spreads warning authority by hazard across civil-defence, environment, water, haze and infectious-disease statutes; this article maps the roles of SCDF, MSS/NEA, PUB and MOH, the 2024-2026 reforms including SG Alert and coastal protection, and open challenges.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-brunei",
+    title: "ブルネイの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Brunei Darussalam — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "2006年災害管理令（現・法令集第293章）と2025年の災害管理戦略政策枠組みを軸に、NDMC・BDMD・排水下水局・県災害管理委員会の分業、3段階の色別気象警報、2024年ASEAN評価の採点、2026年1月の洪水と断水を踏まえたブルネイの予警報制度の課題を整理します。",
+    descriptionEn:
+      "A review of early-warning governance in Brunei Darussalam: the Disaster Management Order 2006 (now Chapter 293), the 2025 strategic policy framework, the division of labour among NDMC, BDMD and the Drainage and Sewerage Department, colour-coded warnings, the 2024 ASEAN assessment and the January 2026 floods.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
+    slug: "ews-governance-timor-leste",
+    title: "ティモール・レステの予警報制度 — 法制度・アクターの役割・現在の課題",
+    titleEn: "Early Warning Governance in Timor-Leste — Laws, Actors and Current Challenges",
+    date: "2026-11-10",
+    description:
+      "2025年10月にASEANの11番目の加盟国となったティモール・レステについて、市民保護法（Lei 12/2020）と市民保護庁組織政令（DL 23/2024）が定める警戒・緊急・災厄の宣言と警報の責務、DNMG・APC・IGTL・スコの分業、WhatsAppに依存する警報の流れ、2025年世帯調査が示すラストマイルの実態、日本を含む国際協力を整理します。",
+    descriptionEn:
+      "Early-warning governance in Timor-Leste, the newest ASEAN member: the 2020 Civil Protection Law and the 2024 organic decree-law of the Civil Protection Authority, the roles of DNMG, APC, IGTL and the sucos, an informal warning chain, the 2025 reach-and-trust survey and cooperation including Japan.",
+    keywords: ["早期警報", "防災", "法制度", "ASEAN"],
+    keywordsEn: ["Early Warning", "DRR", "Legal Framework", "ASEAN"],
+  },
+  {
     slug: "frdp-pacific-resilience",
     title: "太平洋レジリエント開発枠組み（FRDP）2017–2030 — 太平洋島嶼国の統合的な防災・気候変動適応戦略",
     titleEn: "Framework for Resilient Development in the Pacific (FRDP) 2017–2030 — Integrated DRR and climate adaptation strategy",
